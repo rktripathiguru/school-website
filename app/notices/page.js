@@ -1,5 +1,5 @@
 async function getNotices() {
-  const res = await fetch("http://localhost:3000/api/notices", {
+  const res = await fetch("/api/notices", {
     cache: "no-store",
   });
 
