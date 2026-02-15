@@ -24,3 +24,232 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+@keyframes marquee {
+  0% {
+    transform: translateX(100%);
+  }
+
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.animate-marquee {
+  display: inline-block;
+  animation: marquee 20s linear infinite;
+}
+
+.ticker-track {
+  display: inline-flex;
+  white-space: nowrap;
+  animation: tickerScroll 25s linear infinite;
+}
+
+@keyframes tickerScroll {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Wrapper with fade edges */
+.ticker-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Gradient fade effect */
+.ticker-wrapper::before,
+.ticker-wrapper::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 60px;
+  height: 100%;
+  z-index: 2;
+}
+
+.ticker-wrapper::before {
+  left: 0;
+  background: linear-gradient(to right, #1d4ed8, transparent);
+}
+
+.ticker-wrapper::after {
+  right: 0;
+  background: linear-gradient(to left, #1d4ed8, transparent);
+}
+
+/* Track */
+.ticker-track {
+  display: inline-flex;
+  white-space: nowrap;
+  animation: tickerScroll 25s linear infinite;
+}
+
+/* Pause on hover */
+.ticker-wrapper:hover .ticker-track {
+  animation-play-state: paused;
+}
+
+/* Items */
+.ticker-item {
+  margin: 0 30px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.ticker-item:hover {
+  transform: scale(1.05);
+}
+
+/* Animation */
+@keyframes tickerScroll {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Mathematical background pattern */
+
+body {
+  background-color: #f8fafc;
+
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+
+  background-size: 40px 40px;
+}
+
+/* Transparent geometric math background */
+
+body {
+  background-color: #f8fafc;
+
+  background-image:
+    repeating-linear-gradient(45deg,
+      rgba(0, 0, 0, 0.04) 0,
+      rgba(0, 0, 0, 0.04) 1px,
+      transparent 1px,
+      transparent 20px),
+    repeating-linear-gradient(-45deg,
+      rgba(0, 0, 0, 0.04) 0,
+      rgba(0, 0, 0, 0.04) 1px,
+      transparent 1px,
+      transparent 20px);
+}
+
+/* Animated math background */
+
+body {
+  background-color: #f8fafc;
+  position: relative;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+
+  background-image:
+    linear-gradient(0deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+
+  background-size: 60px 60px;
+
+  animation: mathMove 20s linear infinite;
+  opacity: 0.4;
+}
+
+@keyframes mathMove {
+  from {
+    transform: translate(0, 0);
+  }
+
+  to {
+    transform: translate(60px, 60px);
+  }
+}
+
+/* Mathematical graphics background for boxes */
+
+.math-box-bg {
+  position: relative;
+  background-color: white;
+  overflow: hidden;
+}
+
+.math-box-bg::before {
+  content: "π ∑ √ ∫ Δ θ π ∑ √ ∫ Δ θ π ∑ √ ∫";
+  position: absolute;
+  inset: 0;
+
+  font-size: 60px;
+  color: rgba(0, 0, 0, 0.05);
+
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+
+  pointer-events: none;
+  z-index: 0;
+}
+
+.math-box-bg>* {
+  position: relative;
+  z-index: 1;
+}
+/* Graph grid */
+.bg-math-grid {
+  background-image:
+    linear-gradient(rgba(0,0,0,0.25) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,0.25) 1px, transparent 1px);
+  background-size: 50px 50px;
+  background-color: #e8e9ea;
+}
+
+/* Math symbols */
+.bg-math-symbols {
+  background-image: radial-gradient(circle, rgba(0,0,0,0.2) 2px, transparent 2px);
+  background-size: 40px 40px;
+  background-color: #ebebeb;
+}
+
+/* Geometry lines */
+.bg-math-geometry {
+  background-image:
+    repeating-linear-gradient(45deg, rgba(0,0,0,0.2) 0 1px, transparent 1px 20px),
+    repeating-linear-gradient(-45deg, rgba(0,0,0,0.2) 0 1px, transparent 1px 20px);
+  background-color: #f0f0f0;
+}
+
+/* Blueprint style */
+.bg-math-blueprint {
+  background-color: #d0d9ff;
+  background-image:
+    linear-gradient(rgba(0,0,80,0.25) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,80,0.25) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* Math symbol falling animation */
+@keyframes mathFall {
+  0% {
+    transform: translateY(-100px) rotate(0deg);
+  }
+  100% {
+    transform: translateY(calc(100vh + 100px)) rotate(360deg);
+  }
+}
