@@ -131,10 +131,10 @@ export default function Gallery() {
               <img
                 src={img.image_url}
                 alt="Gallery"
-                className="w-full h-60 object-cover group-hover:scale-105 transition duration-300"
+                className="w-full h-60 object-cover group-hover:scale-105 transition duration-300 relative z-0"
               />
-              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition duration-300 flex items-center justify-center pointer-events-none">
-                <svg className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition duration-300 flex items-center justify-center pointer-events-none z-10">
+                <svg className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition duration-300 z-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0m-14 0v14" />
                 </svg>
               </div>
