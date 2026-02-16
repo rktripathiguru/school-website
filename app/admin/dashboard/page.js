@@ -8,39 +8,61 @@ export default function Dashboard() {
   const [admissions, setAdmissions] = useState([]);
   const router = useRouter();
 
+  const [checkingAuth, setCheckingAuth] = useState(true);
+
   useEffect(() => {
     const isLoggedIn = localStorage.getItem("adminLoggedIn");
+
     if (!isLoggedIn) {
       router.push("/admin");
+    } else {
+      setCheckingAuth(false);
+      fetchNotices();
+      fetchAdmissions();
     }
-
-    fetchNotices();
-    fetchAdmissions();
   }, []);
 
+
   const fetchNotices = async () => {
-    const res = await fetch("/api/notices");
-    const data = await res.json();
-    setNotices(data);
+    try {
+      const res = await fetch("/api/notices");
+      if (!res.ok) throw new Error("Failed to fetch notices");
+      const data = await res.json();
+      setNotices(data);
+    } catch (error) {
+      console.error("Error fetching notices:", error);
+      setNotices([]);
+    }
   };
 
   const fetchAdmissions = async () => {
-    const res = await fetch("/api/admissions/list");
-    const data = await res.json();
-    setAdmissions(data);
+    try {
+      const res = await fetch("/api/admissions/list");
+      if (!res.ok) throw new Error("Failed to fetch admissions");
+      const data = await res.json();
+      setAdmissions(data);
+    } catch (error) {
+      console.error("Error fetching admissions:", error);
+      setAdmissions([]);
+    }
   };
 
   const handleDelete = async (id) => {
     const confirmDelete = confirm("Delete this notice?");
     if (!confirmDelete) return;
 
-    await fetch("/api/notices/delete", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id }),
-    });
-
-    fetchNotices();
+    try {
+      const res = await fetch("/api/notices/delete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+      if (!res.ok) throw new Error("Failed to delete notice");
+      fetchNotices();
+    } catch (error) {
+      console.error("Error deleting notice:", error);
+      alert("Failed to delete notice. Please try again.");
+    }
   };
 
   const handleLogout = () => {
@@ -196,15 +218,21 @@ export default function Dashboard() {
                     <select
                       value={app.status}
                       onChange={async (e) => {
-                        await fetch("/api/admissions/update", {
-                          method: "POST",
-                          headers: { "Content-Type": "application/json" },
-                          body: JSON.stringify({
-                            id: app.id,
-                            status: e.target.value,
-                          }),
-                        });
-                        fetchAdmissions();
+                        try {
+                          const res = await fetch("/api/admissions/update", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                              id: app.id,
+                              status: e.target.value,
+                            }),
+                          });
+                          if (!res.ok) throw new Error("Failed to update status");
+                          fetchAdmissions();
+                        } catch (error) {
+                          console.error("Error updating admission status:", error);
+                          alert("Failed to update status. Please try again.");
+                        }
                       }}
                       className="border p-1 rounded"
                     >
@@ -220,13 +248,18 @@ export default function Dashboard() {
                         const confirmDelete = confirm("Delete this application?");
                         if (!confirmDelete) return;
 
-                        await fetch("/api/admissions/delete", {
-                          method: "POST",
-                          headers: { "Content-Type": "application/json" },
-                          body: JSON.stringify({ id: app.id }),
-                        });
-
-                        fetchAdmissions();
+                        try {
+                          const res = await fetch("/api/admissions/delete", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ id: app.id }),
+                          });
+                          if (!res.ok) throw new Error("Failed to delete application");
+                          fetchAdmissions();
+                        } catch (error) {
+                          console.error("Error deleting application:", error);
+                          alert("Failed to delete application. Please try again.");
+                        }
                       }}
                       className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
                     >
