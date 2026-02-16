@@ -1,6 +1,4 @@
 import db from "@/lib/db";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
 
 export async function POST(req) {
   try {
@@ -11,49 +9,40 @@ export async function POST(req) {
       return Response.json({ error: "No file uploaded" }, { status: 400 });
     }
 
+    // Convert file to base64 for storage in database
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-
-    const uploadDir = path.join(process.cwd(), "public/uploads");
+    const base64Data = buffer.toString('base64');
     
-    // Create upload directory if it doesn't exist
-    try {
-      await mkdir(uploadDir, { recursive: true });
-    } catch (mkdirError) {
-      console.error("Failed to create upload directory:", mkdirError);
-      // Continue anyway - directory might already exist
-    }
+    // Determine file type from file name
+    const fileExtension = file.name.split('.').pop().toLowerCase();
+    const mimeType = file.type || `image/${fileExtension}`;
+    
+    // Create data URL for direct embedding
+    const dataUrl = `data:${mimeType};base64,${base64Data}`;
 
-    const filePath = path.join(uploadDir, file.name);
-
-    try {
-      await writeFile(filePath, buffer);
-    } catch (writeError) {
-      console.error("Failed to write file:", writeError);
-      return Response.json({ 
-        error: "Failed to save file. File system may not be available on this platform." 
-      }, { status: 500 });
-    }
-
-    // Save file path in database
+    // Save to database as base64 data URL
     try {
       await db.query(
         "INSERT INTO gallery (image_url) VALUES (?)",
-        [`/uploads/${file.name}`]
+        [dataUrl]
       );
     } catch (dbError) {
       console.error("Database error:", dbError);
       return Response.json({ 
-        error: "File uploaded but failed to save to database. Database connection may be unavailable." 
+        error: "Failed to save image to database. Database connection may be unavailable." 
       }, { status: 500 });
     }
 
-    return Response.json({ message: "Image uploaded successfully" });
+    return Response.json({ 
+      message: "Image uploaded successfully",
+      image_url: dataUrl
+    });
 
   } catch (error) {
     console.error("Upload error:", error);
     return Response.json({ 
-      error: "Upload failed. This may be due to file system limitations on the hosting platform." 
+      error: "Upload failed. Please try again." 
     }, { status: 500 });
   }
 }
