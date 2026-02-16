@@ -3,7 +3,7 @@ import Link from "next/link";
 import NoticeTicker from "@/components/NoticeTicker";
 import MathHeroBackground from "@/components/MathHeroBackground";
 import MathHeroSlideshow from "@/components/MathHeroSlideshow";
-import MathRainEffect from "@/components/MathRainEffect";
+import MathRainWrapper from "@/components/MathRainWrapper";
 
 export default function Home() {
   return (
@@ -13,7 +13,10 @@ export default function Home() {
       <div className="relative h-[60vh] w-full overflow-hidden">
 
         <MathHeroSlideshow />
-        <MathRainEffect />
+        <>
+          <MathRainWrapper />
+          {/* rest of your homepage */}
+        </>
 
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
           <h1 className="text-5xl font-bold text-blue-900">
