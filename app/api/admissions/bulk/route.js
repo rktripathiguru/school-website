@@ -4,7 +4,7 @@ import path from "path";
 import XLSX from "xlsx";
 
 function generateApplicationId() {
-  return "APP" + Date.now() + Math.random().toString(36).substr(2, 9);
+  return "APP" + Date.now() + Math.random().toString(36).substring(2, 9);
 }
 
 function validateStudentData(student) {
