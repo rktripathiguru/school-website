@@ -97,10 +97,14 @@ body {
 
 /* Items */
 .ticker-item {
-  margin: 0 30px;
+  margin: 0 80px;
   font-weight: 600;
   cursor: pointer;
   transition: transform 0.2s ease;
+  padding: 12px 20px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  border-left: 3px solid #fbbf24;
 }
 
 .ticker-item:hover {
