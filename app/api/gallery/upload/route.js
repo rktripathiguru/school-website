@@ -53,7 +53,13 @@ export async function POST(req) {
         id: imageId
       });
     } catch (dbError) {
-      console.error("❌ Database error:", dbError.message);
+      console.error("❌ Database error details:", {
+        message: dbError.message,
+        code: dbError.code,
+        errno: dbError.errno,
+        sql: dbError.sql,
+        sqlMessage: dbError.sqlMessage
+      });
       console.log("🔄 Using fallback storage...");
       
       // Fallback to shared storage
@@ -69,7 +75,8 @@ export async function POST(req) {
         message: "Image uploaded successfully (fallback storage)",
         image_url: dataUrl,
         storage: "fallback",
-        id: imageRecord.id
+        id: imageRecord.id,
+        databaseError: dbError.message
       });
     }
 
