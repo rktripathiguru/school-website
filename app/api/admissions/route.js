@@ -25,7 +25,7 @@ export async function POST(req) {
         address,
         email,
         parent_contact,
-        class,
+        student_class,
         status
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
@@ -39,7 +39,7 @@ export async function POST(req) {
         data.address,
         data.email,
         data.parent_contact,
-        data.class,
+        data.student_class,
         "Pending"
       ]
     );
