@@ -34,12 +34,18 @@ export async function POST(req) {
     // Try to save to database first
     try {
       console.log("💾 Attempting database save...");
-      await db.query(
+      console.log("📊 Image URL length:", dataUrl.length);
+      console.log("🔗 DATABASE_URL:", process.env.DATABASE_URL ? "Set" : "Not set");
+      
+      const result = await db.query(
         "INSERT INTO gallery (image_url, created_at, storage_type) VALUES (?, ?, ?)",
         [dataUrl, new Date().toISOString(), 'database']
       );
       
+      console.log("📝 Query executed:", result);
+      console.log("🎯 Insert result:", result);
       console.log("✅ Successfully saved to database");
+      
       return Response.json({ 
         message: "Image uploaded successfully to database",
         image_url: dataUrl,
