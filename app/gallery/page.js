@@ -174,7 +174,9 @@ export default function Gallery() {
             <img
               src={selectedImage.image_url}
               alt="Gallery full size"
-              className="max-w-full max-h-[80vh] object-contain"
+              className="max-w-full max-h-[80vh] object-contain w-auto h-auto"
+              onLoad={() => console.log("✅ Lightbox image loaded:", selectedImage.image_url)}
+              onError={() => console.log("❌ Lightbox image failed to load:", selectedImage.image_url)}
             />
           </div>
         </div>
