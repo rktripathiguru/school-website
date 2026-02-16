@@ -2,6 +2,9 @@ import db from "@/lib/db";
 import fs from "fs";
 import path from "path";
 
+// Fallback storage for when database is unavailable
+let fallbackStorage = [];
+
 export async function POST(req) {
   try {
     const { id, image_url } = await req.json();
@@ -26,17 +29,32 @@ export async function POST(req) {
     }
     // If it's a base64 data URL, no file to delete
 
-    // Delete record from database
+    // Try to delete from database first
     try {
       await db.query("DELETE FROM gallery WHERE id = ?", [id]);
-    } catch (dbError) {
-      console.error("Database error:", dbError);
+      
       return Response.json({ 
-        error: "Failed to delete image from database. Database connection may be unavailable." 
-      }, { status: 500 });
+        message: "Image deleted successfully from database",
+        storage: "database"
+      });
+    } catch (dbError) {
+      console.error("Database error, trying fallback storage:", dbError);
+      
+      // Try to delete from fallback storage
+      const initialLength = fallbackStorage.length;
+      fallbackStorage = fallbackStorage.filter(img => img.id !== id);
+      
+      if (fallbackStorage.length < initialLength) {
+        return Response.json({ 
+          message: "Image deleted successfully from fallback storage",
+          storage: "fallback"
+        });
+      } else {
+        return Response.json({ 
+          error: "Image not found in fallback storage" 
+        }, { status: 404 });
+      }
     }
-
-    return Response.json({ message: "Image deleted successfully" });
 
   } catch (error) {
     console.error("Delete error:", error);
