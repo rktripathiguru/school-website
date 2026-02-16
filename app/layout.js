@@ -16,12 +16,17 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: "Upgraded Middle School Jevari",
   description: "Empowering Students for a Better Tomorrow",
+  viewport: "width=device-width, initial-scale=1",
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} font-sans`}>
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="theme-color" content="#2563eb" />
+      </head>
+      <body className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}>
   <Navbar />
   {children}
   <Footer />

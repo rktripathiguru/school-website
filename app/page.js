@@ -18,17 +18,17 @@ export default function Home() {
           {/* rest of your homepage */}
         </>
 
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
-          <h1 className="text-5xl font-bold text-blue-900">
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 sm:px-6">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-blue-900">
             Welcome to Upgraded Middle School Jevari
           </h1>
 
-          <p className="mt-6 text-xl text-gray-700">
+          <p className="mt-4 sm:mt-6 text-lg sm:text-xl text-gray-700">
             Empowering Students Through Knowledge
           </p>
 
           <Link href="/admissions">
-            <button className="mt-8 bg-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition">
+            <button className="mt-6 sm:mt-8 bg-blue-600 px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold hover:bg-blue-700 transition text-sm sm:text-base">
               Apply Now
             </button>
           </Link>
@@ -38,26 +38,26 @@ export default function Home() {
       {/* Notice Ticker */}
       <NoticeTicker />
       {/* Principal Section */}
-      <div className="px-8 py-20">
-        <div className="flex gap-4 items-start">
-          <div className="max-w-md">
-            <h2 className="text-2xl font-bold text-blue-700 mb-4 text-center">
-              Message from the Principal
+      <div className="px-4 sm:px-8 py-20">
+        <div className="flex flex-col lg:flex-row gap-4 lg:gap-8 items-start">
+          <div className="w-full lg:max-w-md">
+            <h2 className="text-xl sm:text-2xl font-bold text-blue-700 mb-4 text-center lg:text-left">
+              Message from Principal
             </h2>
 
-            <div className="bg-white shadow-lg rounded-xl p-6 border border-gray-200">
-              <div className="flex flex-col items-center">
+            <div className="bg-white shadow-lg rounded-xl p-4 sm:p-6 border border-gray-200">
+              <div className="flex flex-col items-center lg:items-start">
                 <img
                   src="/images/principal.jpg"
                   alt="Principal"
-                  className="w-80 h-80 object-cover rounded-full mb-4"
+                  className="w-48 h-48 sm:w-64 sm:h-64 lg:w-80 lg:h-80 object-cover rounded-full mb-4"
                 />
-                <h3 className="text-xl font-semibold text-gray-800 mb-4">
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 text-center lg:text-left">
                   Rajendra Prasad
                 </h3>
               </div>
 
-              <p className="text-gray-600 leading-relaxed">
+              <p className="text-gray-600 leading-relaxed text-sm sm:text-base">
                 Welcome to our school. We are committed to providing quality education
                 and nurturing students to become responsible citizens. Our mission is
                 to create a supportive learning environment where every child can grow
@@ -66,8 +66,8 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="flex-1 flex justify-center items-center">
-            <div className="relative w-full h-96 max-w-2xl">
+          <div className="flex-1 flex justify-center items-center mt-8 lg:mt-0">
+            <div className="relative w-full h-64 sm:h-80 lg:h-96 max-w-2xl">
               <svg viewBox="0 0 400 300" className="w-full h-full">
                 {/* Flower stem */}
                 <path
