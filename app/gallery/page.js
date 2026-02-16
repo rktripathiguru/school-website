@@ -125,7 +125,7 @@ export default function Gallery() {
           {images.map((img) => (
             <div
               key={img.id}
-              className="bg-white rounded-xl shadow overflow-hidden cursor-pointer group"
+              className="bg-white rounded-xl shadow overflow-hidden cursor-pointer group relative"
               onClick={() => openLightbox(img)}
             >
               <img
@@ -133,7 +133,7 @@ export default function Gallery() {
                 alt="Gallery"
                 className="w-full h-60 object-cover group-hover:scale-105 transition duration-300"
               />
-              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition duration-300 flex items-center justify-center">
+              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition duration-300 flex items-center justify-center pointer-events-none">
                 <svg className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0m-14 0v14" />
                 </svg>
@@ -154,6 +154,7 @@ export default function Gallery() {
         <div 
           className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4"
           onClick={closeLightbox}
+          style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
         >
           <div 
             className="relative max-w-4xl max-h-full bg-white rounded-lg overflow-hidden"
