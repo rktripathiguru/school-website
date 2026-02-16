@@ -1,9 +1,7 @@
 import db from "@/lib/db";
 import fs from "fs";
 import path from "path";
-
-// Fallback storage for when database is unavailable
-let fallbackStorage = [];
+import { galleryStorage } from "@/lib/gallery-storage";
 
 export async function POST(req) {
   try {
@@ -40,11 +38,10 @@ export async function POST(req) {
     } catch (dbError) {
       console.error("Database error, trying fallback storage:", dbError);
       
-      // Try to delete from fallback storage
-      const initialLength = fallbackStorage.length;
-      fallbackStorage = fallbackStorage.filter(img => img.id !== id);
+      // Try to delete from shared fallback storage
+      const deleted = galleryStorage.deleteImage(id);
       
-      if (fallbackStorage.length < initialLength) {
+      if (deleted) {
         return Response.json({ 
           message: "Image deleted successfully from fallback storage",
           storage: "fallback"
