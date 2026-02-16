@@ -108,13 +108,11 @@ export async function POST(req) {
         } else {
           try {
             // Insert into database
-            await db.query(
+            const result = await db.query(
               `INSERT INTO admissions (
                 application_id,
                 student_name,
                 dob,
-                gender,
-                aadhar_number,
                 father_name,
                 mother_name,
                 address,
@@ -122,20 +120,18 @@ export async function POST(req) {
                 parent_contact,
                 student_class,
                 status
-              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
               [
                 applicationId,
                 student.student_name,
                 student.dob,
-                student.gender,
-                student.aadhar_number,
                 student.father_name,
                 student.mother_name,
                 student.address,
                 student.email,
                 student.parent_contact,
                 student.student_class,
-                "Pending"
+                "pending"
               ]
             );
             
