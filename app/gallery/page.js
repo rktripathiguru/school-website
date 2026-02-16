@@ -63,6 +63,12 @@ export default function Gallery() {
     }
   };
 
+  useEffect(() => {
+    if (typeof window !== 'undefined' && images.length > 0) {
+      localStorage.setItem('galleryImages', JSON.stringify(images));
+    }
+  }, [images]);
+
   return (
     <div className="min-h-screen bg-gray-50 p-10">
       <h1 className="text-3xl font-bold text-center text-blue-700 mb-10">
