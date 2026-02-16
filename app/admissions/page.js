@@ -16,8 +16,6 @@ export default function Admissions() {
     address: "",
   });
 
-  const [statusResult, setStatusResult] = useState("");
-
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -68,30 +66,6 @@ export default function Admissions() {
     }
   };
 
-  const handleCheckStatus = async (e) => {
-    e.preventDefault();
-
-    try {
-      const res = await fetch("/api/admissions/check", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ application_id: applicationIdCheck }),
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        setStatusResult(`Application Status: ${data.status}`);
-      } else {
-        setStatusResult(`Error: ${data.error}`);
-      }
-    } catch (error) {
-      setStatusResult(`Error: ${error.message}`);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gray-100 p-10">
       <h1 className="text-3xl font-bold text-center text-blue-800 mb-10">
@@ -130,69 +104,6 @@ export default function Admissions() {
           Submit Application
         </button>
       </form>
-      {/* Status Check Section */}
-      <div className="mt-16">
-        <h2 className="text-2xl font-bold text-center text-blue-700 mb-6">
-          Check Admission Status
-        </h2>
-
-        <form
-          onSubmit={handleCheckStatus}
-          className="bg-white p-8 rounded-xl shadow max-w-md mx-auto"
-        >
-          <input
-            type="text"
-            placeholder="Enter Application ID"
-            value={applicationIdCheck}
-            onChange={(e) => setApplicationIdCheck(e.target.value)}
-            className="w-full p-3 border rounded mb-6"
-            required
-          />
-
-          <button
-            type="submit"
-            className="w-full bg-green-600 text-white py-3 rounded hover:bg-green-700 transition"
-          >
-            Check Status
-          </button>
-          {statusResult && (
-            <div className="mt-6 text-center">
-              <span
-                className={`px-4 py-2 rounded-full font-semibold text-white ${statusResult.includes("Approved")
-                  ? "bg-green-600"
-                  : statusResult.includes("Rejected")
-                    ? "bg-red-600"
-                    : statusResult.includes("Pending")
-                      ? "bg-yellow-500"
-                      : "bg-gray-600"
-                  }`}
-              >
-                {statusResult}
-              </span>
-            </div>
-          )}
-        </form>
-      </div>
-      {/* Forgot Application ID Section */}
-      <div className="mt-12 text-center">
-        <h3 className="text-lg font-semibold text-gray-700 mb-3">
-          Forgot your Application ID?
-        </h3>
-
-        <p className="text-gray-600">
-          Please contact the school office for assistance.
-        </p>
-
-        <div className="mt-4 bg-gray-100 inline-block px-6 py-4 rounded-lg shadow">
-          <p className="font-semibold text-blue-700">
-            📞 Phone: +91-9801037090
-          </p>
-          <p className="font-semibold text-blue-700 mt-2">
-            📧 Email: umsjevari@gmail.com
-          </p>
-        </div>
-      </div>
-
     </div>
   );
 }

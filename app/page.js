@@ -4,6 +4,7 @@ import NoticeTicker from "@/components/NoticeTicker";
 import MathHeroBackground from "@/components/MathHeroBackground";
 import MathHeroSlideshow from "@/components/MathHeroSlideshow";
 import MathRainWrapper from "@/components/MathRainWrapper";
+import AdmissionStatusCheck from "@/components/AdmissionStatusCheck";
 
 export default function Home() {
   return (
@@ -37,7 +38,8 @@ export default function Home() {
 
       {/* Notice Ticker */}
       <NoticeTicker />
-      {/* Principal Section */}
+      
+      {/* Principal Section with Status Check */}
       <div className="px-4 sm:px-8 py-20">
         <div className="flex flex-col lg:flex-row gap-4 lg:gap-8 items-start">
           <div className="w-full lg:max-w-md">
@@ -104,15 +106,11 @@ export default function Home() {
                 <circle cx="60" cy="180" r="3" fill="#e0e7ff" opacity="0.7" />
                 <circle cx="340" cy="200" r="3.5" fill="#e0e7ff" opacity="0.6" />
                 <circle cx="100" cy="250" r="2.5" fill="#e0e7ff" opacity="0.5" />
-                <circle cx="300" cy="260" r="3" fill="#e0e7ff" opacity="0.6" />
 
                 {/* Small decorative flowers */}
                 <g transform="translate(100, 100)">
                   <circle cx="0" cy="0" r="8" fill="#f9a8d4" opacity="0.6" />
                   <circle cx="-8" cy="0" r="4" fill="#f9a8d4" opacity="0.4" />
-                  <circle cx="8" cy="0" r="4" fill="#f9a8d4" opacity="0.4" />
-                  <circle cx="0" cy="-8" r="4" fill="#f9a8d4" opacity="0.4" />
-                  <circle cx="0" cy="8" r="4" fill="#f9a8d4" opacity="0.4" />
                 </g>
 
                 <g transform="translate(300, 150)">
@@ -125,6 +123,16 @@ export default function Home() {
               </svg>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Admission Status Check Section */}
+      <div className="px-4 sm:px-8 py-8">
+        <h2 className="text-xl sm:text-2xl font-bold text-blue-700 mb-6 text-center">
+          Quick Admission Status Check
+        </h2>
+        <div className="max-w-md mx-auto">
+          <AdmissionStatusCheck />
         </div>
       </div>
 

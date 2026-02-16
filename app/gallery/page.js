@@ -6,9 +6,26 @@ export default function Gallery() {
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null);
 
   useEffect(() => {
     fetchImages();
+    
+    // Also try to load from localStorage as backup
+    try {
+      if (typeof window !== 'undefined') {
+        const storedImages = localStorage.getItem('galleryImages');
+        if (storedImages) {
+          const parsedImages = JSON.parse(storedImages);
+          if (parsedImages.length > 0) {
+            setImages(parsedImages);
+            setError(null); // Clear any error state
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Failed to load images from localStorage:", error);
+    }
   }, []);
 
   const fetchImages = async () => {
@@ -63,11 +80,24 @@ export default function Gallery() {
     }
   };
 
+  // Save images to localStorage whenever they change
   useEffect(() => {
     if (typeof window !== 'undefined' && images.length > 0) {
       localStorage.setItem('galleryImages', JSON.stringify(images));
     }
   }, [images]);
+
+  const openLightbox = (image) => {
+    setSelectedImage(image);
+    // Prevent body scroll when modal is open
+    document.body.style.overflow = 'hidden';
+  };
+
+  const closeLightbox = () => {
+    setSelectedImage(null);
+    // Restore body scroll
+    document.body.style.overflow = 'unset';
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 p-10">
@@ -95,13 +125,19 @@ export default function Gallery() {
           {images.map((img) => (
             <div
               key={img.id}
-              className="bg-white rounded-xl shadow overflow-hidden"
+              className="bg-white rounded-xl shadow overflow-hidden cursor-pointer group"
+              onClick={() => openLightbox(img)}
             >
               <img
                 src={img.image_url}
                 alt="Gallery"
-                className="w-full h-60 object-cover hover:scale-105 transition duration-300"
+                className="w-full h-60 object-cover group-hover:scale-105 transition duration-300"
               />
+              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition duration-300 flex items-center justify-center">
+                <svg className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0m-14 0v14" />
+                </svg>
+              </div>
             </div>
           ))}
         </div>
@@ -110,6 +146,36 @@ export default function Gallery() {
       {!loading && images.length === 0 && (
         <div className="text-center py-10">
           <p className="text-gray-500">No images found in the gallery.</p>
+        </div>
+      )}
+
+      {/* Lightbox Modal */}
+      {selectedImage && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4"
+          onClick={closeLightbox}
+        >
+          <div 
+            className="relative max-w-4xl max-h-full bg-white rounded-lg overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close button */}
+            <button
+              onClick={closeLightbox}
+              className="absolute top-4 right-4 z-10 bg-white bg-opacity-90 hover:bg-opacity-100 text-gray-800 rounded-full p-2 transition duration-200"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            {/* Full size image */}
+            <img
+              src={selectedImage.image_url}
+              alt="Gallery full size"
+              className="max-w-full max-h-[80vh] object-contain"
+            />
+          </div>
         </div>
       )}
     </div>
