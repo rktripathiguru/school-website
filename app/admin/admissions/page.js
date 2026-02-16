@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 
 export default function AdminAdmissions() {
   const [admissions, setAdmissions] = useState([]);
+  const [stats, setStats] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [filter, setFilter] = useState("all"); // all, individual, bulk
@@ -25,7 +26,8 @@ export default function AdminAdmissions() {
         throw new Error(data.error);
       }
       
-      setAdmissions(data);
+      setAdmissions(data.admissions || []);
+      setStats(data.stats || {});
     } catch (error) {
       console.error("Failed to fetch admissions:", error);
       setError(error.message);
@@ -36,8 +38,8 @@ export default function AdminAdmissions() {
 
   const filteredAdmissions = admissions.filter(admission => {
     const matchesFilter = filter === "all" || 
-      (filter === "individual" && admission.application_id && admission.application_id.startsWith("APP")) ||
-      (filter === "bulk" && admission.application_id && admission.application_id.startsWith("BULK"));
+      (filter === "individual" && admission.data_source === 'form') ||
+      (filter === "bulk" && admission.data_source === 'excel');
     
     const matchesSearch = searchTerm === "" || 
       admission.student_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -60,13 +62,13 @@ export default function AdminAdmissions() {
     }
   };
 
-  const getSourceBadge = (applicationId) => {
-    if (applicationId?.startsWith("BULK")) {
-      return <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Excel Upload</span>;
-    } else if (applicationId?.startsWith("APP")) {
-      return <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Individual Form</span>;
+  const getSourceBadge = (data_source, source_label) => {
+    if (data_source === 'excel') {
+      return <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">{source_label || 'Excel Upload'}</span>;
+    } else if (data_source === 'form') {
+      return <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">{source_label || 'Individual Form'}</span>;
     }
-    return <span className="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">Unknown</span>;
+    return <span className="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">{source_label || 'Unknown'}</span>;
   };
 
   if (loading) {
@@ -169,24 +171,24 @@ export default function AdminAdmissions() {
         {/* Statistics */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
           <div className="bg-white rounded-lg shadow p-6">
-            <div className="text-2xl font-bold text-gray-900">{admissions.length}</div>
+            <div className="text-2xl font-bold text-gray-900">{stats.total || 0}</div>
             <div className="text-sm text-gray-600">Total Applications</div>
           </div>
           <div className="bg-white rounded-lg shadow p-6">
             <div className="text-2xl font-bold text-green-600">
-              {admissions.filter(a => a.application_id?.startsWith("APP")).length}
+              {stats.form_submissions || 0}
             </div>
             <div className="text-sm text-gray-600">Individual Forms</div>
           </div>
           <div className="bg-white rounded-lg shadow p-6">
             <div className="text-2xl font-bold text-blue-600">
-              {admissions.filter(a => a.application_id?.startsWith("BULK")).length}
+              {stats.excel_uploads || 0}
             </div>
             <div className="text-sm text-gray-600">Excel Uploads</div>
           </div>
           <div className="bg-white rounded-lg shadow p-6">
             <div className="text-2xl font-bold text-yellow-600">
-              {admissions.filter(a => a.status === "pending").length}
+              {stats.pending || 0}
             </div>
             <div className="text-sm text-gray-600">Pending Review</div>
           </div>
@@ -246,7 +248,7 @@ export default function AdminAdmissions() {
                         {admission.student_class || "N/A"}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        {getSourceBadge(admission.application_id)}
+                        {getSourceBadge(admission.data_source, admission.source_label)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(admission.status)}`}>

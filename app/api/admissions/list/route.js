@@ -15,11 +15,18 @@ export async function GET() {
       return Response.json({ error: "Database connection failed", details: connError.message }, { status: 500 });
     }
     
-    // Get all admissions from database
+    // Get all admissions from database with unified schema
     try {
       console.log("💾 Fetching all admissions...");
       const [rows] = await db.query(
-        "SELECT * FROM admissions ORDER BY created_at DESC"
+        `SELECT *, 
+         CASE 
+           WHEN data_source = 'excel' THEN 'Excel Upload'
+           WHEN data_source = 'form' THEN 'Individual Form'
+           ELSE 'Unknown'
+         END as source_label
+         FROM admissions 
+         ORDER BY created_at DESC`
       );
       
       console.log("✅ Admissions query successful, found", rows.length, "records");
@@ -28,11 +35,24 @@ export async function GET() {
       if (rows.length > 0) {
         console.log("📊 Sample admissions data:");
         rows.slice(0, 3).forEach((row, index) => {
-          console.log(`  ${index + 1}. ID: ${row.id}, App ID: ${row.application_id}, Name: ${row.student_name}, Source: ${row.application_id?.startsWith('BULK') ? 'Bulk' : 'Individual'}`);
+          console.log(`  ${index + 1}. ID: ${row.id}, App ID: ${row.application_id}, Name: ${row.student_name}, Source: ${row.data_source} (${row.source_label})`);
         });
       }
       
-      return Response.json(rows);
+      // Add statistics for the admin dashboard
+      const stats = {
+        total: rows.length,
+        form_submissions: rows.filter(row => row.data_source === 'form').length,
+        excel_uploads: rows.filter(row => row.data_source === 'excel').length,
+        pending: rows.filter(row => row.status === 'pending').length,
+        approved: rows.filter(row => row.status === 'approved').length,
+        rejected: rows.filter(row => row.status === 'rejected').length
+      };
+      
+      return Response.json({
+        admissions: rows,
+        stats: stats
+      });
     } catch (dbError) {
       console.error("❌ Database error:", dbError.message);
       console.error("❌ Full error:", dbError);
