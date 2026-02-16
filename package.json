@@ -1,14 +1,13 @@
 {
   "name": "school-website",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "postbuild": "echo 'Build completed at' $(date)",
-    "vercel-build": "vercel build --prod"
+    "postbuild": "echo 'Build completed at' $(date)"
   },
   "dependencies": {
     "formidable": "^3.5.4",
