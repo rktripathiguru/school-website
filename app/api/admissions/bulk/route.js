@@ -1,6 +1,4 @@
 import db from "@/lib/db";
-import { writeFile } from "fs/promises";
-import path from "path";
 import XLSX from "xlsx";
 
 function generateApplicationId() {
@@ -159,7 +157,7 @@ export async function POST(req) {
         }
       }
 
-      // Save upload log
+      // Optionally save to memory (for audit trail)
       const uploadLog = {
         timestamp: new Date().toISOString(),
         totalRecords: jsonData.length,
@@ -168,15 +166,7 @@ export async function POST(req) {
         results: results
       };
 
-      // Optionally save to file (for audit trail)
-      try {
-        const logDir = path.join(process.cwd(), 'public', 'uploads');
-        const logPath = path.join(logDir, `bulk-upload-${Date.now()}.json`);
-        await writeFile(logPath, JSON.stringify(uploadLog, null, 2));
-        console.log(`📝 Upload log saved to: ${logPath}`);
-      } catch (logError) {
-        console.error('Failed to save upload log:', logError);
-      }
+      console.log(`📝 Upload completed: ${uploadLog.totalRecords} records, Success: ${uploadLog.successful}, Failed: ${uploadLog.failed}`);
 
       return Response.json({
         message: `Bulk upload completed. Success: ${results.success.length}, Failed: ${results.errors.length}`,
