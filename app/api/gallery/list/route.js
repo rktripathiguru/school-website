@@ -6,6 +6,15 @@ export async function GET() {
     console.log("=== Gallery List Request Started ===");
     console.log("🔗 DATABASE_URL:", process.env.DATABASE_URL ? "Set" : "Not set");
     
+    // Test database connection first
+    try {
+      console.log("🔌 Testing database connection...");
+      const [testResult] = await db.query("SELECT 1 as test");
+      console.log("✅ Database connection test successful");
+    } catch (connError) {
+      console.error("❌ Database connection failed:", connError.message);
+    }
+    
     // Try to get images from database first
     try {
       console.log("💾 Attempting database query...");
@@ -18,6 +27,7 @@ export async function GET() {
       
       // If we got data from database, return it
       if (rows && rows.length > 0) {
+        console.log("🎯 Returning database images");
         return Response.json(rows);
       } else {
         console.log("⚠️ Database returned empty, checking if table exists...");

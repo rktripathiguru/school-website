@@ -35,8 +35,8 @@ export async function POST(req) {
     try {
       console.log("💾 Attempting database save...");
       await db.query(
-        "INSERT INTO gallery (image_url) VALUES (?)",
-        [dataUrl]
+        "INSERT INTO gallery (image_url, created_at, storage_type) VALUES (?, ?, ?)",
+        [dataUrl, new Date().toISOString(), 'database']
       );
       
       console.log("✅ Successfully saved to database");
