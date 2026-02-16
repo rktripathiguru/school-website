@@ -1,5 +1,5 @@
 import db from "@/lib/db";
-import XLSX from "xlsx";
+import * as XLSX from "xlsx";
 
 function generateApplicationId() {
   return "APP" + Date.now() + Math.random().toString(36).substring(2, 9);
