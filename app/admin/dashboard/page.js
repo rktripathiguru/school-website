@@ -40,7 +40,7 @@ export default function Dashboard() {
       const res = await fetch("/api/admissions/list");
       if (!res.ok) throw new Error("Failed to fetch admissions");
       const data = await res.json();
-      setAdmissions(data);
+      setAdmissions(data.admissions || data);
     } catch (error) {
       console.error("Error fetching admissions:", error);
       setAdmissions([]);
