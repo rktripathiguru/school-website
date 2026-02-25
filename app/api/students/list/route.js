@@ -15,8 +15,8 @@ export async function GET() {
     const admissionsArray = Array.isArray(allAdmissions) ? allAdmissions : [];
 
     // Normalize admissions data to match students table
-    const admissionsMapped = admissionsArray.map((a, index) => ({
-      id: "admission-" + index,
+    const admissionsMapped = admissionsArray.map((a) => ({
+      id: "admission-" + a.application_id, // Use application_id instead of index
       name: a.name,
       class: a.class,
       roll_no: "-",

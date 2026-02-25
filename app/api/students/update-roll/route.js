@@ -12,12 +12,18 @@ export async function PUT(request) {
     let params;
 
     if (type === "admission") {
-      // For admission records, we need to update based on application_id
-      // First check if roll_no column exists
+      // For admission records, extract the application_id from the ID
+      // The ID format is now "admission-{application_id}"
+      const actualApplicationId = id.replace("admission-", "");
+      
+      if (!actualApplicationId) {
+        return Response.json({ error: "Invalid admission ID format" }, { status: 400 });
+      }
+      
+      // Check if roll_no column exists
       try {
         const [columns] = await db.query("SHOW COLUMNS FROM admissions LIKE 'roll_no'");
         if (columns.length === 0) {
-          // Column doesn't exist, add it
           await db.query("ALTER TABLE admissions ADD COLUMN roll_no VARCHAR(20) DEFAULT NULL");
         }
       } catch (error) {
@@ -25,14 +31,13 @@ export async function PUT(request) {
       }
       
       query = "UPDATE admissions SET roll_no = ? WHERE application_id = ?";
-      params = [roll_no, id.replace("admission-", "")];
+      params = [roll_no, actualApplicationId];
     } else {
       // For regular students table
-      // First check if roll_no column exists
+      // Check if roll_no column exists
       try {
         const [columns] = await db.query("SHOW COLUMNS FROM students LIKE 'roll_no'");
         if (columns.length === 0) {
-          // Column doesn't exist, add it
           await db.query("ALTER TABLE students ADD COLUMN roll_no VARCHAR(20) DEFAULT NULL");
         }
       } catch (error) {
