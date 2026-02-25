@@ -132,8 +132,8 @@ export default function BulkAdmissions() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 13h6m-3 9 9v6m0 6h6m-6 9 9v6m9-21l9-9-9-9h18a9 9 0 0118 0v-6a9 9 0 00-9-9H9a9 9 0 00-9 9z" />
                   </svg>
                   <div className="ml-4">
-                    <p className="text-lg font-medium text-gray-700">{file.name}</p>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-lg font-semibold text-gray-800">{file.name}</p>
+                    <p className="text-sm text-gray-600 font-medium">
                       {(file.size / 1024 / 1024).toFixed(2)} MB
                     </p>
                   </div>
@@ -149,10 +149,10 @@ export default function BulkAdmissions() {
                   <svg className="w-12 h-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-4 4v8a4 4 0 008 8zm0 12h8m-4-4H8a4 4 0 00-4-4v8a4 4 0 008 8z" />
                   </svg>
-                  <p className="text-lg font-medium text-gray-700">
+                  <p className="text-lg font-semibold text-gray-800">
                     Drag and drop your Excel file here, or click to browse
                   </p>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-gray-600 font-medium">
                     Supports .xlsx and .xls files
                   </p>
                 </div>

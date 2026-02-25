@@ -10,8 +10,6 @@ export default function AdminGallery() {
   const [error, setError] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [deleting, setDeleting] = useState(null);
-  const [debugInfo, setDebugInfo] = useState(null);
-  const [fixingColumn, setFixingColumn] = useState(false);
 
   useEffect(() => {
     fetchImages();
@@ -72,25 +70,16 @@ export default function AdminGallery() {
     formData.append("file", file);
 
     try {
-      console.log("🚀 Starting upload...");
       const res = await fetch("/api/gallery/upload", {
         method: "POST",
         body: formData,
       });
 
       const data = await res.json();
-      console.log("📨 Upload response:", data);
 
       if (res.ok) {
-        setMessage(`✅ ${data.message} (Storage: ${data.storage}, ID: ${data.id})`);
+        setMessage(`✅ ${data.message}`);
         setFile(null);
-        
-        // Debug: Check database immediately after upload
-        console.log("🔍 Checking database after upload...");
-        const debugRes = await fetch("/api/gallery/debug");
-        const debugInfo = await debugRes.json();
-        console.log("🔍 Debug info:", debugInfo);
-        
         fetchImages();
       } else {
         setMessage(`❌ ${data.error || "Upload failed"}`);
@@ -134,40 +123,6 @@ export default function AdminGallery() {
     }
   };
 
-  const checkDebugInfo = async () => {
-    try {
-      console.log("🔍 Fetching debug info...");
-      const res = await fetch("/api/gallery/debug");
-      const info = await res.json();
-      setDebugInfo(info);
-      console.log("🔍 Debug info:", info);
-    } catch (error) {
-      console.error("Debug fetch error:", error);
-      setDebugInfo({ error: error.message });
-    }
-  };
-
-  const fixGalleryColumn = async () => {
-    setFixingColumn(true);
-    try {
-      console.log("🔧 Fixing gallery column...");
-      const res = await fetch("/api/gallery/fix-column", { method: "POST" });
-      const result = await res.json();
-      
-      if (res.ok) {
-        setMessage(`✅ ${result.message}`);
-        // Refresh debug info
-        await checkDebugInfo();
-      } else {
-        setMessage(`❌ ${result.error}`);
-      }
-    } catch (error) {
-      console.error("Fix column error:", error);
-      setMessage("❌ Failed to fix gallery column");
-    } finally {
-      setFixingColumn(false);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gray-100 p-10">
@@ -183,32 +138,6 @@ export default function AdminGallery() {
         </div>
       )}
 
-      {/* Debug Section */}
-      <div className="bg-blue-50 border border-blue-200 p-4 rounded mb-6">
-        <div className="flex justify-between items-center mb-2">
-          <h3 className="font-semibold text-blue-800">Database Debug Info</h3>
-          <div className="space-x-2">
-            <button
-              onClick={fixGalleryColumn}
-              className="bg-orange-600 text-white px-3 py-1 rounded text-sm hover:bg-orange-700 disabled:bg-gray-400"
-              disabled={fixingColumn}
-            >
-              {fixingColumn ? "Fixing..." : "Fix Column Size"}
-            </button>
-            <button
-              onClick={checkDebugInfo}
-              className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700"
-            >
-              Check Debug Info
-            </button>
-          </div>
-        </div>
-        {debugInfo && (
-          <div className="text-xs bg-white p-3 rounded border">
-            <pre className="whitespace-pre-wrap">{JSON.stringify(debugInfo, null, 2)}</pre>
-          </div>
-        )}
-      </div>
 
       {/* Upload Section */}
       <form
@@ -218,7 +147,7 @@ export default function AdminGallery() {
         <input
           type="file"
           accept="image/*"
-          className="mb-4"
+          className="mb-4 block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"
           onChange={(e) => setFile(e.target.files[0])}
           disabled={uploading}
         />
@@ -244,7 +173,7 @@ export default function AdminGallery() {
       {loading && (
         <div className="text-center py-10">
           <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-700"></div>
-          <p className="mt-2 text-gray-600">Loading gallery...</p>
+          <p className="mt-2 text-gray-800 font-medium">Loading gallery...</p>
         </div>
       )}
 
@@ -275,7 +204,7 @@ export default function AdminGallery() {
 
       {!loading && images.length === 0 && (
         <div className="text-center py-10">
-          <p className="text-gray-500">No images found in the gallery.</p>
+          <p className="text-gray-800 font-medium">No images found in the gallery.</p>
         </div>
       )}
     </div>

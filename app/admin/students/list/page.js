@@ -22,8 +22,6 @@ export default function StudentsList() {
         throw new Error(`HTTP error! status: ${res.status}`);
       }
       const data = await res.json();
-      console.log("Fetched students data:", data);
-      console.log("Total students:", data.length);
 
       setStudents(data);
       setFiltered(data);
@@ -36,16 +34,12 @@ export default function StudentsList() {
 
   const handleFilter = (cls) => {
     setSelectedClass(cls);
-    console.log("Filtering by class:", cls);
-    console.log("Available students:", students);
 
     if (cls === "All") {
       setFiltered(students);
-      console.log("Showing all students:", students.length);
     } else {
       const filtered = students.filter((s) => s.class === cls);
       setFiltered(filtered);
-      console.log("Filtered students:", filtered.length);
     }
   };
 
@@ -249,14 +243,14 @@ export default function StudentsList() {
         </div>
         
         {filtered.length === 0 && (
-          <div className="text-center py-12 text-gray-500">
-            <div className="text-lg font-medium">No students found</div>
-            <div className="text-sm mt-2">Try adjusting the filter or add new students</div>
+          <div className="text-center py-12 text-gray-700">
+            <div className="text-lg font-semibold text-gray-800">No students found</div>
+            <div className="text-sm mt-2 text-gray-600">Try adjusting the filter or add new students</div>
           </div>
         )}
       </div>
       
-      <div className="mt-6 text-center text-sm text-gray-600">
+      <div className="mt-6 text-center text-sm text-gray-700 font-medium">
         Showing {filtered.length} of {students.length} students
       </div>
 
