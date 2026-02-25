@@ -127,7 +127,8 @@ export async function POST(req) {
         code: dbError.code,
         errno: dbError.errno,
         sql: dbError.sql,
-        sqlMessage: dbError.sqlMessage
+        sqlMessage: dbError.sqlMessage,
+        stack: dbError.stack
       });
       console.log("🔄 Using fallback storage...");
       
@@ -145,7 +146,8 @@ export async function POST(req) {
         image_url: dataUrl,
         storage: "fallback",
         id: imageRecord.id,
-        databaseError: dbError.message
+        databaseError: dbError.message,
+        sqlMessage: dbError.sqlMessage
       });
     }
 

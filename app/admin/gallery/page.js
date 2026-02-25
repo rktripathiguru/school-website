@@ -11,6 +11,7 @@ export default function AdminGallery() {
   const [uploading, setUploading] = useState(false);
   const [deleting, setDeleting] = useState(null);
   const [debugInfo, setDebugInfo] = useState(null);
+  const [fixingColumn, setFixingColumn] = useState(false);
 
   useEffect(() => {
     fetchImages();
@@ -146,6 +147,28 @@ export default function AdminGallery() {
     }
   };
 
+  const fixGalleryColumn = async () => {
+    setFixingColumn(true);
+    try {
+      console.log("🔧 Fixing gallery column...");
+      const res = await fetch("/api/gallery/fix-column", { method: "POST" });
+      const result = await res.json();
+      
+      if (res.ok) {
+        setMessage(`✅ ${result.message}`);
+        // Refresh debug info
+        await checkDebugInfo();
+      } else {
+        setMessage(`❌ ${result.error}`);
+      }
+    } catch (error) {
+      console.error("Fix column error:", error);
+      setMessage("❌ Failed to fix gallery column");
+    } finally {
+      setFixingColumn(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 p-10">
       <h1 className="text-3xl font-bold text-blue-700 mb-8">
@@ -164,12 +187,21 @@ export default function AdminGallery() {
       <div className="bg-blue-50 border border-blue-200 p-4 rounded mb-6">
         <div className="flex justify-between items-center mb-2">
           <h3 className="font-semibold text-blue-800">Database Debug Info</h3>
-          <button
-            onClick={checkDebugInfo}
-            className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700"
-          >
-            Check Debug Info
-          </button>
+          <div className="space-x-2">
+            <button
+              onClick={fixGalleryColumn}
+              className="bg-orange-600 text-white px-3 py-1 rounded text-sm hover:bg-orange-700 disabled:bg-gray-400"
+              disabled={fixingColumn}
+            >
+              {fixingColumn ? "Fixing..." : "Fix Column Size"}
+            </button>
+            <button
+              onClick={checkDebugInfo}
+              className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700"
+            >
+              Check Debug Info
+            </button>
+          </div>
         </div>
         {debugInfo && (
           <div className="text-xs bg-white p-3 rounded border">
