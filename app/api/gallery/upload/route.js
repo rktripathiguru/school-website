@@ -107,7 +107,7 @@ export async function POST(req) {
           // Old table structure
           result = await db.query(
             "INSERT INTO gallery (image_url, created_at, storage_type) VALUES (?, ?, ?)",
-            [dataUrl, new Date().toISOString(), 'database']
+            [dataUrl, new Date().toISOString().slice(0, 19).replace('T', ' '), 'database']
           );
           console.log("✅ Successfully saved to database (old structure)");
         }
