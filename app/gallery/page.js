@@ -31,7 +31,7 @@ export default function Gallery() {
   const fetchImages = async () => {
     try {
       setLoading(true);
-      const res = await fetch("/api/gallery/list");
+      const res = await fetch("/api/gallery");
       
       if (!res.ok) {
         throw new Error(`HTTP error! status: ${res.status}`);
@@ -52,27 +52,27 @@ export default function Gallery() {
       setImages([
         {
           id: 1,
-          image_url: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&h=600&fit=crop",
+          file_path: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&h=600&fit=crop",
         },
         {
           id: 2,
-          image_url: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800&h=600&fit=crop",
+          file_path: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800&h=600&fit=crop",
         },
         {
           id: 3,
-          image_url: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=800&h=600&fit=crop",
+          file_path: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=800&h=600&fit=crop",
         },
         {
           id: 4,
-          image_url: "https://images.unsplash.com/photo-1509062522246-3755977927d7?w=800&h=600&fit=crop",
+          file_path: "https://images.unsplash.com/photo-1509062522246-3755977927d7?w=800&h=600&fit=crop",
         },
         {
           id: 5,
-          image_url: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=800&h=600&fit=crop",
+          file_path: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=800&h=600&fit=crop",
         },
         {
           id: 6,
-          image_url: "https://images.unsplash.com/photo-1498243691581-b145c3f54a5a?w=800&h=600&fit=crop",
+          file_path: "https://images.unsplash.com/photo-1498243691581-b145c3f54a5a?w=800&h=600&fit=crop",
         },
       ]);
     } finally {
@@ -129,7 +129,7 @@ export default function Gallery() {
               onClick={() => openLightbox(img)}
             >
               <img
-                src={img.image_url}
+                src={img.file_path}
                 alt="Gallery"
                 className="w-full h-60 object-cover group-hover:scale-105 transition duration-300 relative z-0"
               />
@@ -172,11 +172,11 @@ export default function Gallery() {
 
             {/* Full size image */}
             <img
-              src={selectedImage.image_url}
+              src={selectedImage.file_path}
               alt="Gallery full size"
               className="max-w-full max-h-[80vh] object-contain w-auto h-auto"
-              onLoad={() => console.log("✅ Lightbox image loaded:", selectedImage.image_url)}
-              onError={() => console.log("❌ Lightbox image failed to load:", selectedImage.image_url)}
+              onLoad={() => console.log("✅ Lightbox image loaded:", selectedImage.file_path)}
+              onError={() => console.log("❌ Lightbox image failed to load:", selectedImage.file_path)}
             />
           </div>
         </div>

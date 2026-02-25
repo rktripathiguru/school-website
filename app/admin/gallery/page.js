@@ -18,7 +18,7 @@ export default function AdminGallery() {
   const fetchImages = async () => {
     try {
       setLoading(true);
-      const res = await fetch("/api/gallery/list");
+      const res = await fetch("/api/gallery");
       
       if (!res.ok) {
         throw new Error(`HTTP error! status: ${res.status}`);
@@ -39,15 +39,15 @@ export default function AdminGallery() {
       setImages([
         {
           id: 1,
-          image_url: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&h=600&fit=crop",
+          file_path: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&h=600&fit=crop",
         },
         {
           id: 2,
-          image_url: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800&h=600&fit=crop",
+          file_path: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800&h=600&fit=crop",
         },
         {
           id: 3,
-          image_url: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=800&h=600&fit=crop",
+          file_path: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=800&h=600&fit=crop",
         },
       ]);
     } finally {
@@ -183,13 +183,13 @@ export default function AdminGallery() {
               className="bg-white rounded-xl shadow overflow-hidden relative"
             >
               <img
-                src={img.image_url}
+                src={img.file_path}
                 alt="Gallery"
                 className="w-full h-60 object-cover"
               />
 
               <button
-                onClick={() => handleDelete(img.id, img.image_url)}
+                onClick={() => handleDelete(img.id, img.file_path)}
                 className="absolute top-2 right-2 bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
                 disabled={deleting === img.id}
               >

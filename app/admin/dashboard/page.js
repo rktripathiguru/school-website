@@ -173,7 +173,7 @@ export default function Dashboard() {
         </h2>
 
         <div className="bg-white rounded-lg shadow overflow-x-auto">
-          <table className="min-w-full text-left text-sm">
+          <table className="min-w-full text-left text-sm text-gray-800">
             <thead className="bg-blue-600 text-white">
               <tr>
                 <th className="p-3">App ID</th>

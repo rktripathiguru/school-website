@@ -38,8 +38,8 @@ export async function POST(req) {
       console.log("🔗 DATABASE_URL:", process.env.DATABASE_URL ? "Set" : "Not set");
       
       const result = await db.query(
-        "INSERT INTO gallery (image_url, created_at, storage_type) VALUES (?, ?, ?)",
-        [dataUrl, new Date().toISOString(), 'database']
+        "INSERT INTO gallery (title, description, file_path, file_name, file_size, mime_type) VALUES (?, ?, ?, ?, ?, ?)",
+        [file.name, '', dataUrl, file.name, file.size, mimeType]
       );
       
       console.log("📝 Query executed:", result);
@@ -50,7 +50,7 @@ export async function POST(req) {
         message: "Image uploaded successfully to database",
         image_url: dataUrl,
         storage: "database",
-        id: imageId
+        id: result.insertId
       });
     } catch (dbError) {
       console.error("❌ Database error details:", {
