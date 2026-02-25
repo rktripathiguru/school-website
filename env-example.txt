@@ -1,0 +1,12 @@
+# Railway MySQL Database Configuration
+DATABASE_URL=mysql://username:password@host:port/database_name
+
+# Example:
+# DATABASE_URL=mysql://root:password@localhost:3306/school_db
+
+# For Railway, get this from your Railway project dashboard:
+# 1. Go to your Railway project
+# 2. Click on your MySQL service
+# 3. Go to "Connect" tab
+# 4. Copy the "Connection URL"
+# 5. Set it as DATABASE_URL environment variable in Railway

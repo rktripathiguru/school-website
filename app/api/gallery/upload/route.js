@@ -37,6 +37,40 @@ export async function POST(req) {
       console.log("📊 Image URL length:", dataUrl.length);
       console.log("🔗 DATABASE_URL:", process.env.DATABASE_URL ? "Set" : "Not set");
       
+      // Test database connection first
+      const [testResult] = await db.query("SELECT 1 as test");
+      console.log("✅ Database connection test successful");
+      
+      // Check if gallery table exists
+      const [tableCheck] = await db.query("SHOW TABLES LIKE 'gallery'");
+      console.log("📋 Gallery table exists:", tableCheck.length > 0 ? "Yes" : "No");
+      
+      if (tableCheck.length === 0) {
+        console.log("❌ Gallery table doesn't exist - creating it...");
+        
+        // Create the gallery table
+        const createTableSQL = `
+          CREATE TABLE gallery (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            title VARCHAR(255) NOT NULL,
+            description TEXT,
+            file_path VARCHAR(500) NOT NULL,
+            file_name VARCHAR(255) NOT NULL,
+            file_size INT NOT NULL,
+            mime_type VARCHAR(100) NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+          )
+        `;
+        
+        await db.query(createTableSQL);
+        console.log("✅ Gallery table created successfully!");
+        
+        // Add index
+        await db.query("CREATE INDEX idx_gallery_created_at ON gallery(created_at)");
+        console.log("✅ Index created successfully!");
+      }
+      
       const result = await db.query(
         "INSERT INTO gallery (title, description, file_path, file_name, file_size, mime_type) VALUES (?, ?, ?, ?, ?, ?)",
         [file.name, '', dataUrl, file.name, file.size, mimeType]
