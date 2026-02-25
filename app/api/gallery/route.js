@@ -19,7 +19,7 @@ export async function GET() {
     try {
       console.log("💾 Attempting database query...");
       
-      // Check if gallery table exists
+      // Check if gallery table exists and get its structure
       const [tableCheck] = await db.query("SHOW TABLES LIKE 'gallery'");
       console.log("📋 Gallery table exists:", tableCheck.length > 0 ? "Yes" : "No");
       
@@ -47,27 +47,38 @@ export async function GET() {
         // Add index
         await db.query("CREATE INDEX idx_gallery_created_at ON gallery(created_at)");
         console.log("✅ Index created successfully!");
-      }
-      
-      const [rows] = await db.query(
-        "SELECT * FROM gallery ORDER BY created_at DESC"
-      );
-      
-      console.log("✅ Database query successful, found", rows.length, "images");
-      console.log("📊 Sample data:", JSON.stringify(rows.slice(0, 2), null, 2));
-      
-      // If we got data from database, return it
-      if (rows && rows.length > 0) {
-        console.log("🎯 Returning database images");
-        return Response.json(rows);
-      } else {
-        console.log("⚠️ Database returned empty images");
         
-        // Return fallback storage
-        console.log("🔄 Using fallback storage...");
-        const fallbackImages = galleryStorage.getImages();
-        console.log("✅ Fallback storage has", fallbackImages.length, "images");
-        return Response.json(fallbackImages);
+        // Return empty array for new table
+        return Response.json([]);
+      } else {
+        console.log("📋 Gallery table exists, checking structure...");
+        
+        // Check table structure
+        const [columns] = await db.query("DESCRIBE gallery");
+        const hasImageUrl = columns.some(col => col.Field === 'image_url');
+        const hasFilePath = columns.some(col => col.Field === 'file_path');
+        
+        console.log("📊 Table has image_url:", hasImageUrl, "file_path:", hasFilePath);
+        
+        let [rows] = await db.query("SELECT * FROM gallery ORDER BY created_at DESC");
+        
+        // Normalize data to have both fields for compatibility
+        rows = rows.map(row => {
+          if (hasImageUrl && !hasFilePath) {
+            // Old structure - add file_path from image_url
+            return { ...row, file_path: row.image_url };
+          } else if (hasFilePath && !hasImageUrl) {
+            // New structure - add image_url from file_path
+            return { ...row, image_url: row.file_path };
+          }
+          // Both fields exist or neither - return as-is
+          return row;
+        });
+        
+        console.log("✅ Database query successful, found", rows.length, "images");
+        console.log("📊 Sample data:", JSON.stringify(rows.slice(0, 2), null, 2));
+        
+        return Response.json(rows);
       }
     } catch (dbError) {
       console.error("❌ Database error:", dbError.message);

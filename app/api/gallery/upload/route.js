@@ -41,7 +41,7 @@ export async function POST(req) {
       const [testResult] = await db.query("SELECT 1 as test");
       console.log("✅ Database connection test successful");
       
-      // Check if gallery table exists
+      // Check if gallery table exists and get its structure
       const [tableCheck] = await db.query("SHOW TABLES LIKE 'gallery'");
       console.log("📋 Gallery table exists:", tableCheck.length > 0 ? "Yes" : "No");
       
@@ -69,23 +69,58 @@ export async function POST(req) {
         // Add index
         await db.query("CREATE INDEX idx_gallery_created_at ON gallery(created_at)");
         console.log("✅ Index created successfully!");
+        
+        // Use new table structure
+        const result = await db.query(
+          "INSERT INTO gallery (title, description, file_path, file_name, file_size, mime_type) VALUES (?, ?, ?, ?, ?, ?)",
+          [file.name, '', dataUrl, file.name, file.size, mimeType]
+        );
+        
+        console.log("📝 Query executed:", result);
+        console.log("✅ Successfully saved to database (new structure)");
+        
+        return Response.json({ 
+          message: "Image uploaded successfully to database",
+          image_url: dataUrl,
+          storage: "database",
+          id: result.insertId
+        });
+      } else {
+        console.log("📋 Gallery table exists, checking structure...");
+        
+        // Check table structure
+        const [columns] = await db.query("DESCRIBE gallery");
+        const hasImageUrl = columns.some(col => col.Field === 'image_url');
+        const hasFilePath = columns.some(col => col.Field === 'file_path');
+        
+        console.log("📊 Table has image_url:", hasImageUrl, "file_path:", hasFilePath);
+        
+        let result;
+        if (hasFilePath) {
+          // New table structure
+          result = await db.query(
+            "INSERT INTO gallery (title, description, file_path, file_name, file_size, mime_type) VALUES (?, ?, ?, ?, ?, ?)",
+            [file.name, '', dataUrl, file.name, file.size, mimeType]
+          );
+          console.log("✅ Successfully saved to database (new structure)");
+        } else {
+          // Old table structure
+          result = await db.query(
+            "INSERT INTO gallery (image_url, created_at, storage_type) VALUES (?, ?, ?)",
+            [dataUrl, new Date().toISOString(), 'database']
+          );
+          console.log("✅ Successfully saved to database (old structure)");
+        }
+        
+        console.log("📝 Query executed:", result);
+        
+        return Response.json({ 
+          message: "Image uploaded successfully to database",
+          image_url: dataUrl,
+          storage: "database",
+          id: result.insertId
+        });
       }
-      
-      const result = await db.query(
-        "INSERT INTO gallery (title, description, file_path, file_name, file_size, mime_type) VALUES (?, ?, ?, ?, ?, ?)",
-        [file.name, '', dataUrl, file.name, file.size, mimeType]
-      );
-      
-      console.log("📝 Query executed:", result);
-      console.log("🎯 Insert result:", result);
-      console.log("✅ Successfully saved to database");
-      
-      return Response.json({ 
-        message: "Image uploaded successfully to database",
-        image_url: dataUrl,
-        storage: "database",
-        id: result.insertId
-      });
     } catch (dbError) {
       console.error("❌ Database error details:", {
         message: dbError.message,
