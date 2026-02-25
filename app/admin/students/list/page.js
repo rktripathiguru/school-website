@@ -7,6 +7,9 @@ export default function StudentsList() {
   const [filtered, setFiltered] = useState([]);
   const [selectedClass, setSelectedClass] = useState("All");
   const [selectedStudent, setSelectedStudent] = useState(null);
+  const [editingRollNo, setEditingRollNo] = useState(null);
+  const [tempRollNo, setTempRollNo] = useState("");
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     fetchStudents();
@@ -47,6 +50,58 @@ export default function StudentsList() {
   };
 
   const uniqueClasses = ["All", ...new Set(students.filter(s => s.class).map((s) => s.class))];
+
+  const startEditingRollNo = (studentId, currentRollNo) => {
+    setEditingRollNo(studentId);
+    setTempRollNo(currentRollNo || "");
+  };
+
+  const cancelEditingRollNo = () => {
+    setEditingRollNo(null);
+    setTempRollNo("");
+  };
+
+  const saveRollNo = async (studentId) => {
+    if (saving) return;
+    
+    setSaving(true);
+    try {
+      const student = students.find(s => s.id === studentId);
+      const isAdmission = studentId.toString().startsWith("admission-");
+      
+      const res = await fetch("/api/students/update-roll", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: studentId,
+          roll_no: tempRollNo,
+          type: isAdmission ? "admission" : "student"
+        }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Failed to update roll number");
+      }
+
+      // Update local state
+      setStudents(prev => prev.map(s => 
+        s.id === studentId ? { ...s, roll_no: tempRollNo } : s
+      ));
+      setFiltered(prev => prev.map(s => 
+        s.id === studentId ? { ...s, roll_no: tempRollNo } : s
+      ));
+
+      cancelEditingRollNo();
+    } catch (error) {
+      console.error("Error saving roll number:", error);
+      alert("Failed to save roll number: " + error.message);
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <div className="p-10 bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
@@ -112,9 +167,53 @@ export default function StudentsList() {
                     </span>
                   </td>
                   <td className="p-4 w-1/8 text-center">
-                    <span className="text-gray-700 font-mono text-sm bg-gray-100 px-2 py-1 rounded">
-                      {student.roll_no || "N/A"}
-                    </span>
+                    {editingRollNo === student.id ? (
+                      <div className="flex items-center justify-center gap-1">
+                        <input
+                          type="text"
+                          value={tempRollNo}
+                          onChange={(e) => setTempRollNo(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              saveRollNo(student.id);
+                            } else if (e.key === 'Escape') {
+                              cancelEditingRollNo();
+                            }
+                          }}
+                          className="w-16 px-2 py-1 text-sm border border-blue-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-600 text-center font-mono"
+                          autoFocus
+                          disabled={saving}
+                        />
+                        <button
+                          onClick={() => saveRollNo(student.id)}
+                          disabled={saving}
+                          className="p-1 text-green-600 hover:text-green-800 disabled:opacity-50"
+                          title="Save"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={cancelEditingRollNo}
+                          disabled={saving}
+                          className="p-1 text-red-600 hover:text-red-800 disabled:opacity-50"
+                          title="Cancel"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => startEditingRollNo(student.id, student.roll_no)}
+                        className="text-gray-700 font-mono text-sm bg-gray-100 px-2 py-1 rounded hover:bg-gray-200 transition-colors"
+                        title="Click to edit"
+                      >
+                        {student.roll_no || "N/A"}
+                      </button>
+                    )}
                   </td>
                   <td className="p-4 w-1/5">
                     <span className="text-gray-700">
