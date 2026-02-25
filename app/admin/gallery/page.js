@@ -10,6 +10,7 @@ export default function AdminGallery() {
   const [error, setError] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [deleting, setDeleting] = useState(null);
+  const [debugInfo, setDebugInfo] = useState(null);
 
   useEffect(() => {
     fetchImages();
@@ -70,23 +71,32 @@ export default function AdminGallery() {
     formData.append("file", file);
 
     try {
+      console.log("🚀 Starting upload...");
       const res = await fetch("/api/gallery/upload", {
         method: "POST",
         body: formData,
       });
 
       const data = await res.json();
+      console.log("📨 Upload response:", data);
 
       if (res.ok) {
-        setMessage("Image uploaded successfully!");
+        setMessage(`✅ ${data.message} (Storage: ${data.storage}, ID: ${data.id})`);
         setFile(null);
+        
+        // Debug: Check database immediately after upload
+        console.log("🔍 Checking database after upload...");
+        const debugRes = await fetch("/api/gallery/debug");
+        const debugInfo = await debugRes.json();
+        console.log("🔍 Debug info:", debugInfo);
+        
         fetchImages();
       } else {
-        setMessage(data.error || "Upload failed. Database connection may be unavailable.");
+        setMessage(`❌ ${data.error || "Upload failed"}`);
       }
     } catch (error) {
       console.error("Upload error:", error);
-      setMessage("Upload failed. Database connection may be unavailable on Vercel.");
+      setMessage("❌ Upload failed. Check console for details.");
     } finally {
       setUploading(false);
     }
@@ -123,6 +133,19 @@ export default function AdminGallery() {
     }
   };
 
+  const checkDebugInfo = async () => {
+    try {
+      console.log("🔍 Fetching debug info...");
+      const res = await fetch("/api/gallery/debug");
+      const info = await res.json();
+      setDebugInfo(info);
+      console.log("🔍 Debug info:", info);
+    } catch (error) {
+      console.error("Debug fetch error:", error);
+      setDebugInfo({ error: error.message });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 p-10">
       <h1 className="text-3xl font-bold text-blue-700 mb-8">
@@ -136,6 +159,24 @@ export default function AdminGallery() {
           </p>
         </div>
       )}
+
+      {/* Debug Section */}
+      <div className="bg-blue-50 border border-blue-200 p-4 rounded mb-6">
+        <div className="flex justify-between items-center mb-2">
+          <h3 className="font-semibold text-blue-800">Database Debug Info</h3>
+          <button
+            onClick={checkDebugInfo}
+            className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700"
+          >
+            Check Debug Info
+          </button>
+        </div>
+        {debugInfo && (
+          <div className="text-xs bg-white p-3 rounded border">
+            <pre className="whitespace-pre-wrap">{JSON.stringify(debugInfo, null, 2)}</pre>
+          </div>
+        )}
+      </div>
 
       {/* Upload Section */}
       <form
