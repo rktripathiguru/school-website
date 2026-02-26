@@ -142,6 +142,15 @@ export async function POST(request) {
       });
     } catch (dbError) {
       console.error("❌ Database error:", dbError.message);
+      
+      // Check if it's a table doesn't exist error
+      if (dbError.code === 'ER_NO_SUCH_TABLE') {
+        return Response.json({ 
+          error: "Teachers table not found. Please run the database migration first.",
+          details: "Run: node scripts/create-teachers-table.cjs"
+        }, { status: 500 });
+      }
+      
       return Response.json({ error: "Failed to add teacher to database" }, { status: 500 });
     }
   } catch (error) {
