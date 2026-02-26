@@ -72,17 +72,33 @@ export default function About() {
 
         <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-8">
           {teachers.map((teacher) => (
-            <div key={teacher.id} className="bg-white shadow-lg rounded-xl p-6 text-center">
+            <div key={teacher.id} className="bg-white shadow-lg rounded-xl p-6 text-center hover:shadow-xl transition-shadow">
               <img
                 src={teacher.image_url || "/images/teachers/default.jpg"}
                 alt={teacher.name}
-                className="w-32 h-32 object-cover rounded-full mx-auto mb-4"
+                className="w-32 h-32 object-cover rounded-full mx-auto mb-4 border-4 border-blue-100"
                 onError={(e) => {
                   e.target.src = "/images/teachers/default.jpg";
                 }}
               />
-              <h3 className="font-semibold text-blue-700">{teacher.name}</h3>
-              <p className="text-gray-500">{teacher.subject}</p>
+              <h3 className="font-semibold text-blue-700 text-lg mb-2">{teacher.name}</h3>
+              <p className="text-gray-600 mb-3">{teacher.subject}</p>
+              
+              {teacher.qualification && (
+                <p className="text-sm text-gray-500 mb-2">{teacher.qualification}</p>
+              )}
+              
+              {teacher.experience_years && (
+                <p className="text-sm text-gray-500 mb-3">{teacher.experience_years} years experience</p>
+              )}
+              
+              {teacher.email && (
+                <p className="text-xs text-gray-400 mb-1">{teacher.email}</p>
+              )}
+              
+              {teacher.phone && (
+                <p className="text-xs text-gray-400">{teacher.phone}</p>
+              )}
             </div>
           ))}
         </div>

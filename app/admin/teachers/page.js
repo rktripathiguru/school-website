@@ -6,7 +6,17 @@ import { useRouter } from "next/navigation";
 export default function TeachersManagement() {
   const [teachers, setTeachers] = useState([]);
   const [editingTeacher, setEditingTeacher] = useState(null);
-  const [formData, setFormData] = useState({ name: "", subject: "", image_url: "" });
+  const [formData, setFormData] = useState({ 
+    name: "", 
+    subject: "", 
+    email: "", 
+    phone: "", 
+    image: null, 
+    bio: "", 
+    experience_years: "", 
+    qualification: "",
+    display_order: "0"
+  });
   const [isAdding, setIsAdding] = useState(false);
   const router = useRouter();
 
@@ -35,16 +45,28 @@ export default function TeachersManagement() {
     e.preventDefault();
     
     try {
-      const url = editingTeacher ? "/api/teachers" : "/api/teachers";
+      const formDataToSend = new FormData();
+      
+      // Add all form fields
+      Object.keys(formData).forEach(key => {
+        if (key === 'image' && formData[key]) {
+          formDataToSend.append('image', formData[key]);
+        } else if (key !== 'image') {
+          formDataToSend.append(key, formData[key]);
+        }
+      });
+
+      // Add ID if editing
+      if (editingTeacher) {
+        formDataToSend.append('id', editingTeacher.id);
+      }
+
+      const url = "/api/teachers";
       const method = editingTeacher ? "PUT" : "POST";
-      const payload = editingTeacher 
-        ? { ...formData, id: editingTeacher.id }
-        : formData;
 
       const res = await fetch(url, {
         method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: formDataToSend,
       });
 
       if (!res.ok) throw new Error("Failed to save teacher");
@@ -61,9 +83,15 @@ export default function TeachersManagement() {
   const handleEdit = (teacher) => {
     setEditingTeacher(teacher);
     setFormData({
-      name: teacher.name,
-      subject: teacher.subject,
-      image_url: teacher.image_url || ""
+      name: teacher.name || "",
+      subject: teacher.subject || "",
+      email: teacher.email || "",
+      phone: teacher.phone || "",
+      image: null, // Don't pre-load image for editing
+      bio: teacher.bio || "",
+      experience_years: teacher.experience_years?.toString() || "",
+      qualification: teacher.qualification || "",
+      display_order: teacher.display_order?.toString() || "0"
     });
     setIsAdding(false);
   };
@@ -87,7 +115,17 @@ export default function TeachersManagement() {
   };
 
   const resetForm = () => {
-    setFormData({ name: "", subject: "", image_url: "" });
+    setFormData({ 
+      name: "", 
+      subject: "", 
+      email: "", 
+      phone: "", 
+      image: null, 
+      bio: "", 
+      experience_years: "", 
+      qualification: "",
+      display_order: "0"
+    });
     setEditingTeacher(null);
     setIsAdding(false);
   };
@@ -159,10 +197,10 @@ export default function TeachersManagement() {
           </h2>
           
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <input
                 type="text"
-                placeholder="Teacher Name"
+                placeholder="Teacher Name *"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 className="border p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -170,18 +208,74 @@ export default function TeachersManagement() {
               />
               <input
                 type="text"
-                placeholder="Subject (e.g., Mathematics Teacher)"
+                placeholder="Subject *"
                 value={formData.subject}
                 onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                 className="border p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
               <input
-                type="text"
-                placeholder="Image URL (optional)"
-                value={formData.image_url}
-                onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                type="email"
+                placeholder="Email (optional)"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 className="border p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <input
+                type="tel"
+                placeholder="Phone (optional)"
+                value={formData.phone}
+                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                className="border p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <input
+                type="number"
+                placeholder="Experience Years (optional)"
+                value={formData.experience_years}
+                onChange={(e) => setFormData({ ...formData, experience_years: e.target.value })}
+                className="border p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                min="0"
+              />
+              <input
+                type="text"
+                placeholder="Qualification (optional)"
+                value={formData.qualification}
+                onChange={(e) => setFormData({ ...formData, qualification: e.target.value })}
+                className="border p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <input
+                type="number"
+                placeholder="Display Order (0 = first)"
+                value={formData.display_order}
+                onChange={(e) => setFormData({ ...formData, display_order: e.target.value })}
+                className="border p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                min="0"
+              />
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Teacher Photo (optional)
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setFormData({ ...formData, image: e.target.files[0] })}
+                  className="w-full border p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                {formData.image && (
+                  <p className="mt-2 text-sm text-green-600">
+                    Selected: {formData.image.name} ({(formData.image.size / 1024).toFixed(1)} KB)
+                  </p>
+                )}
+              </div>
+            </div>
+            
+            <div>
+              <textarea
+                placeholder="Teacher Bio (optional)"
+                value={formData.bio}
+                onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                className="w-full border p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                rows="3"
               />
             </div>
             
@@ -217,6 +311,9 @@ export default function TeachersManagement() {
                 <tr>
                   <th className="p-4 text-left text-sm font-medium text-gray-700">Name</th>
                   <th className="p-4 text-left text-sm font-medium text-gray-700">Subject</th>
+                  <th className="p-4 text-left text-sm font-medium text-gray-700">Email</th>
+                  <th className="p-4 text-left text-sm font-medium text-gray-700">Phone</th>
+                  <th className="p-4 text-left text-sm font-medium text-gray-700">Experience</th>
                   <th className="p-4 text-left text-sm font-medium text-gray-700">Image</th>
                   <th className="p-4 text-left text-sm font-medium text-gray-700">Actions</th>
                 </tr>
@@ -226,6 +323,9 @@ export default function TeachersManagement() {
                   <tr key={teacher.id} className="hover:bg-gray-50">
                     <td className="p-4 font-medium text-gray-900">{teacher.name}</td>
                     <td className="p-4 text-gray-600">{teacher.subject}</td>
+                    <td className="p-4 text-gray-600 text-sm">{teacher.email || '-'}</td>
+                    <td className="p-4 text-gray-600 text-sm">{teacher.phone || '-'}</td>
+                    <td className="p-4 text-gray-600 text-sm">{teacher.experience_years ? `${teacher.experience_years} years` : '-'}</td>
                     <td className="p-4">
                       {teacher.image_url ? (
                         <img
@@ -237,7 +337,7 @@ export default function TeachersManagement() {
                           }}
                         />
                       ) : (
-                        <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-500">
+                        <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 text-xs">
                           No Image
                         </div>
                       )}
