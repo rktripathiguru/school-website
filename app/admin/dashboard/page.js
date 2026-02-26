@@ -106,6 +106,12 @@ export default function Dashboard() {
             Gallery
           </li>
           <li
+            onClick={() => router.push("/admin/teachers")}
+            className="hover:bg-blue-600 p-2 rounded cursor-pointer"
+          >
+            Teachers
+          </li>
+          <li
             onClick={handleLogout}
             className="hover:bg-red-600 p-2 rounded cursor-pointer"
           >
