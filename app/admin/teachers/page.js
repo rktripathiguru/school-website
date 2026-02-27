@@ -136,9 +136,9 @@ export default function TeachersManagement() {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="admin-panel min-h-screen bg-gray-50">
       {/* Sidebar */}
-      <div className="w-48 bg-blue-700 text-white p-6">
+      <div className="w-64 bg-blue-800 text-white p-6">
         <h2 className="text-2xl font-bold mb-10">Admin Panel</h2>
 
         <ul className="space-y-4">
@@ -186,13 +186,13 @@ export default function TeachersManagement() {
 
       {/* Main Content */}
       <div className="flex-1 p-10">
-        <h1 className="text-3xl font-bold text-gray-800 mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-8">
           Teachers Management
         </h1>
 
         {/* Add/Edit Teacher Form */}
         <div className="bg-white p-6 rounded-lg shadow mb-8">
-          <h2 className="text-xl font-semibold mb-4">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">
             {editingTeacher ? "Edit Teacher" : "Add New Teacher"}
           </h2>
           
@@ -203,7 +203,7 @@ export default function TeachersManagement() {
                 placeholder="Teacher Name *"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="border p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="border-2 border-gray-300 p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 font-medium"
                 required
               />
               <input
@@ -211,7 +211,7 @@ export default function TeachersManagement() {
                 placeholder="Subject *"
                 value={formData.subject}
                 onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                className="border p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="border-2 border-gray-300 p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 font-medium"
                 required
               />
               <input
@@ -219,21 +219,21 @@ export default function TeachersManagement() {
                 placeholder="Email (optional)"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="border p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="border-2 border-gray-300 p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
               />
               <input
                 type="tel"
                 placeholder="Phone (optional)"
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                className="border p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="border-2 border-gray-300 p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
               />
               <input
                 type="number"
                 placeholder="Experience Years (optional)"
                 value={formData.experience_years}
                 onChange={(e) => setFormData({ ...formData, experience_years: e.target.value })}
-                className="border p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="border-2 border-gray-300 p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                 min="0"
               />
               <input
@@ -241,14 +241,14 @@ export default function TeachersManagement() {
                 placeholder="Qualification (optional)"
                 value={formData.qualification}
                 onChange={(e) => setFormData({ ...formData, qualification: e.target.value })}
-                className="border p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="border-2 border-gray-300 p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
               />
               <input
                 type="number"
                 placeholder="Display Order (0 = first)"
                 value={formData.display_order}
                 onChange={(e) => setFormData({ ...formData, display_order: e.target.value })}
-                className="border p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="border-2 border-gray-300 p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                 min="0"
               />
               <div>
@@ -259,10 +259,10 @@ export default function TeachersManagement() {
                   type="file"
                   accept="image/*"
                   onChange={(e) => setFormData({ ...formData, image: e.target.files[0] })}
-                  className="w-full border p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border-2 border-gray-300 p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                 />
                 {formData.image && (
-                  <p className="mt-2 text-sm text-green-600">
+                  <p className="mt-2 text-sm text-green-600 font-medium">
                     Selected: {formData.image.name} ({(formData.image.size / 1024).toFixed(1)} KB)
                   </p>
                 )}
@@ -274,7 +274,7 @@ export default function TeachersManagement() {
                 placeholder="Teacher Bio (optional)"
                 value={formData.bio}
                 onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-                className="w-full border p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border-2 border-gray-300 p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                 rows="3"
               />
             </div>
@@ -302,30 +302,30 @@ export default function TeachersManagement() {
         {/* Teachers List */}
         <div className="bg-white rounded-lg shadow">
           <div className="p-6 border-b">
-            <h2 className="text-xl font-semibold">Current Teachers</h2>
+            <h2 className="text-xl font-semibold text-gray-900">Current Teachers</h2>
           </div>
           
           <div className="overflow-x-auto">
             <table className="min-w-full">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="p-4 text-left text-sm font-medium text-gray-700">Name</th>
-                  <th className="p-4 text-left text-sm font-medium text-gray-700">Subject</th>
-                  <th className="p-4 text-left text-sm font-medium text-gray-700">Email</th>
-                  <th className="p-4 text-left text-sm font-medium text-gray-700">Phone</th>
-                  <th className="p-4 text-left text-sm font-medium text-gray-700">Experience</th>
-                  <th className="p-4 text-left text-sm font-medium text-gray-700">Image</th>
-                  <th className="p-4 text-left text-sm font-medium text-gray-700">Actions</th>
+                  <th className="p-4 text-left text-sm font-semibold text-gray-900">Name</th>
+                  <th className="p-4 text-left text-sm font-semibold text-gray-900">Subject</th>
+                  <th className="p-4 text-left text-sm font-semibold text-gray-900">Email</th>
+                  <th className="p-4 text-left text-sm font-semibold text-gray-900">Phone</th>
+                  <th className="p-4 text-left text-sm font-semibold text-gray-900">Experience</th>
+                  <th className="p-4 text-left text-sm font-semibold text-gray-900">Image</th>
+                  <th className="p-4 text-left text-sm font-semibold text-gray-900">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {teachers.map((teacher) => (
                   <tr key={teacher.id} className="hover:bg-gray-50">
-                    <td className="p-4 font-medium text-gray-900">{teacher.name}</td>
-                    <td className="p-4 text-gray-600">{teacher.subject}</td>
-                    <td className="p-4 text-gray-600 text-sm">{teacher.email || '-'}</td>
-                    <td className="p-4 text-gray-600 text-sm">{teacher.phone || '-'}</td>
-                    <td className="p-4 text-gray-600 text-sm">{teacher.experience_years ? `${teacher.experience_years} years` : '-'}</td>
+                    <td className="p-4 font-semibold text-gray-900">{teacher.name}</td>
+                    <td className="p-4 font-medium text-gray-800">{teacher.subject}</td>
+                    <td className="p-4 text-gray-700 text-sm">{teacher.email || '-'}</td>
+                    <td className="p-4 text-gray-700 text-sm">{teacher.phone || '-'}</td>
+                    <td className="p-4 text-gray-700 text-sm">{teacher.experience_years ? `${teacher.experience_years} years` : '-'}</td>
                     <td className="p-4">
                       {teacher.image_url ? (
                         <img
@@ -364,7 +364,7 @@ export default function TeachersManagement() {
             </table>
             
             {teachers.length === 0 && (
-              <div className="p-8 text-center text-gray-500">
+              <div className="p-8 text-center text-gray-700 font-medium">
                 No teachers found. Add your first teacher above.
               </div>
             )}
