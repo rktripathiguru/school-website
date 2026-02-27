@@ -5,10 +5,16 @@ import MathHeroBackground from "@/components/MathHeroBackground";
 import MathHeroSlideshow from "@/components/MathHeroSlideshow";
 import MathRainWrapper from "@/components/MathRainWrapper";
 import AdmissionStatusCheck from "@/components/AdmissionStatusCheck";
+import Head from "next/head";
 
 export default function Home() {
   return (
     <div>
+      <Head>
+        <title>Upgraded Middle School Jevari</title>
+        <meta name="description" content="Empowering Students Through Knowledge" />
+        <link rel="preload" href="/images/principal.jpg" as="image" />
+      </Head>
 
       {/* Hero Section */}
       <div className="relative h-[60vh] w-full overflow-hidden">
@@ -49,10 +55,13 @@ export default function Home() {
 
             <div className="bg-white shadow-lg rounded-xl p-4 sm:p-6 border border-gray-200">
               <div className="flex flex-col items-center lg:items-start">
-                <img
+                <Image
                   src="/images/principal.jpg"
                   alt="Principal"
+                  width={320}
+                  height={320}
                   className="w-48 h-48 sm:w-64 sm:h-64 lg:w-80 lg:h-80 object-cover rounded-full mb-4"
+                  priority
                 />
                 <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 text-center lg:text-left">
                   Rajendra Prasad
