@@ -333,7 +333,7 @@ export default function TeachersManagement() {
                           alt={teacher.name}
                           className="w-12 h-12 rounded-full object-cover"
                           onError={(e) => {
-                            e.target.src = "/images/teachers/default.jpg";
+                            e.target.src = "/images/teachers/default.svg";
                           }}
                         />
                       ) : (

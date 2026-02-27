@@ -74,11 +74,11 @@ export default function About() {
           {teachers.map((teacher) => (
             <div key={teacher.id} className="bg-white shadow-lg rounded-xl p-6 text-center hover:shadow-xl transition-shadow">
               <img
-                src={teacher.image_url || "/images/teachers/default.jpg"}
+                src={teacher.image_url || "/images/teachers/default.svg"}
                 alt={teacher.name}
                 className="w-32 h-32 object-cover rounded-full mx-auto mb-4 border-4 border-blue-100"
                 onError={(e) => {
-                  e.target.src = "/images/teachers/default.jpg";
+                  e.target.src = "/images/teachers/default.svg";
                 }}
               />
               <h3 className="font-semibold text-blue-700 text-lg mb-2">{teacher.name}</h3>

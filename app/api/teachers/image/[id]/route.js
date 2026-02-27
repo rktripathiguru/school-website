@@ -34,6 +34,33 @@ export async function GET(request, { params }) {
 
     } catch (dbError) {
       console.error("❌ Database error:", dbError.message);
+      console.error("❌ Database error code:", dbError.code);
+      
+      // If database connection fails, return a default image
+      if (dbError.code === 'ECONNREFUSED' || dbError.code === 'ENOTFOUND' || dbError.code === 'ETIMEDOUT') {
+        console.log("🔄 Database not available, returning default image");
+        
+        // Return a simple SVG placeholder image
+        const svgPlaceholder = `
+          <svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+            <rect width="200" height="200" fill="#f3f4f6"/>
+            <text x="100" y="100" text-anchor="middle" font-family="Arial" font-size="14" fill="#6b7280">
+              Teacher Image
+            </text>
+            <text x="100" y="120" text-anchor="middle" font-family="Arial" font-size="12" fill="#9ca3af">
+              (Demo Mode)
+            </text>
+          </svg>
+        `;
+        
+        return new Response(svgPlaceholder, {
+          headers: {
+            'Content-Type': 'image/svg+xml',
+            'Cache-Control': 'public, max-age=3600'
+          }
+        });
+      }
+      
       return Response.json({ error: "Failed to fetch image from database" }, { status: 500 });
     }
   } catch (error) {
