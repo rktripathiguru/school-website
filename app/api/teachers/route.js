@@ -16,10 +16,7 @@ export async function GET() {
       // Add image URL for teachers with images
       const teachersWithImageUrls = rows.map(teacher => ({
         ...teacher,
-        // For now, always return default SVG to avoid 400 errors
-        // When database is properly set up with real images, change this back
-        image_url: "/images/teachers/default.svg"
-        // image_url: teacher.image_mime_type ? `/api/teachers/image/${teacher.id}` : "/images/teachers/default.svg"
+        image_url: teacher.image_mime_type ? `/api/teachers/image/${teacher.id}` : "/images/teachers/default.svg"
       }));
       
       console.log("✅ Database query successful, found", teachersWithImageUrls.length, "teachers");

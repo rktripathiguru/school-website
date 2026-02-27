@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Debug Tool</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; }
+        .result { margin: 10px 0; padding: 10px; background: #f5f5f5; }
+        .success { background: #d4edda; border-color: #c3e6cb; }
+        .error { background: #f8d7da; border-color: #f5c6cb; }
+        img { max-width: 100px; height: auto; border: 1px solid #ddd; }
+        .debug-info { font-size: 12px; color: #666; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Teacher Image Debug Tool</h1>
+    
+    <div class="test-section">
+        <h2>1. Test Teachers API</h2>
+        <div id="api-result" class="result">Loading...</div>
+    </div>
+    
+    <div class="test-section">
+        <h2>2. Test Image URLs</h2>
+        <div id="image-results" class="result">Loading...</div>
+    </div>
+    
+    <div class="test-section">
+        <h2>3. Test Direct Database Query</h2>
+        <div id="db-result" class="result">Loading...</div>
+    </div>
+    
+    <div class="test-section">
+        <h2>4. Manual Image Test</h2>
+        <div id="manual-test" class="result">Loading...</div>
+    </div>
+    
+    <div class="test-section">
+        <h2>5. Console Logs</h2>
+        <div id="console-logs" class="result debug-info">Check browser console for detailed logs...</div>
+    </div>
+
+    <script>
+        let teachers = [];
+        let imageTests = [];
+        
+        // Test 1: Get teachers from API
+        async function testTeachersAPI() {
+            try {
+                const response = await fetch('/api/teachers');
+                const data = await response.json();
+                teachers = data;
+                
+                const apiResult = document.getElementById('api-result');
+                apiResult.innerHTML = `
+                    <h3>✅ API Response (${response.status})</h3>
+                    <p>Found ${data.length} teachers</p>
+                    <div class="debug-info">
+                        ${data.map((t, i) => `
+                            <div><strong>${i+1}. ${t.name}:</strong> 
+                            Image URL: ${t.image_url || 'NULL'} 
+                            MIME: ${t.image_mime_type || 'NULL'}</div>
+                        `).join('')}
+                    </div>
+                `;
+                
+                // Test 2: Test each image URL
+                testImageURLs();
+                
+            } catch (error) {
+                document.getElementById('api-result').innerHTML = `
+                    <div class="error">❌ API Error: ${error.message}</div>
+                `;
+            }
+        }
+        
+        // Test 2: Test image URLs
+        async function testImageURLs() {
+            const imageResults = document.getElementById('image-results');
+            imageResults.innerHTML = '<h3>Testing Image URLs...</h3>';
+            
+            for (let i = 0; i < teachers.length; i++) {
+                const teacher = teachers[i];
+                if (teacher.image_url && teacher.image_url !== '/images/teachers/default.svg') {
+                    try {
+                        console.log(`Testing image ${i+1}: ${teacher.image_url}`);
+                        const imgResponse = await fetch(teacher.image_url);
+                        
+                        const testDiv = document.createElement('div');
+                        testDiv.innerHTML = `
+                            <h4>${teacher.name} - ${imgResponse.status}</h4>
+                            <img src="${teacher.image_url}" alt="${teacher.name}" 
+                                 onerror="this.style.border='2px solid red'; this.alt='FAILED: ' + this.src + '">
+                            <p><strong>Status:</strong> ${imgResponse.status} ${imgResponse.ok ? '✅' : '❌'}</p>
+                            <p><strong>Content-Type:</strong> ${imgResponse.headers.get('content-type')}</p>
+                            <p><strong>Size:</strong> ${imgResponse.headers.get('content-length') || 'Unknown'} bytes</p>
+                            <p><strong>Cache:</strong> ${imgResponse.headers.get('cache-control')}</p>
+                        `;
+                        testDiv.className = imgResponse.ok ? 'result success' : 'result error';
+                        imageResults.appendChild(testDiv);
+                        
+                    } catch (error) {
+                        const errorDiv = document.createElement('div');
+                        errorDiv.innerHTML = `
+                            <h4>${teacher.name} - ERROR</h4>
+                            <p><strong>Error:</strong> ${error.message}</p>
+                        `;
+                        errorDiv.className = 'result error';
+                        imageResults.appendChild(errorDiv);
+                    }
+                } else {
+                    const defaultDiv = document.createElement('div');
+                    defaultDiv.innerHTML = `
+                        <h4>${teacher.name} - Default SVG</h4>
+                        <img src="/images/teachers/default.svg" alt="${teacher.name}">
+                        <p><strong>Using:</strong> Default SVG</p>
+                    `;
+                    defaultDiv.className = 'result success';
+                    imageResults.appendChild(defaultDiv);
+                }
+            }
+        }
+        
+        // Test 3: Manual database check
+        async function testDatabase() {
+            try {
+                // This would need server-side implementation
+                document.getElementById('db-result').innerHTML = `
+                    <h3>📊 Database Check</h3>
+                    <p><strong>Note:</strong> Database check requires server-side access</p>
+                    <p>Check Railway MySQL console for:</p>
+                    <ul>
+                        <li>teachers table exists</li>
+                        <li>image_data column has data</li>
+                        <li>image_mime_type is set correctly</li>
+                        <li>Time zones match between server and database</li>
+                    </ul>
+                `;
+            } catch (error) {
+                document.getElementById('db-result').innerHTML = `
+                    <div class="error">❌ Database Test Error: ${error.message}</div>
+                `;
+            }
+        }
+        
+        // Test 4: Manual image creation test
+        function testManualImage() {
+            document.getElementById('manual-test').innerHTML = `
+                <h3>🧪 Manual Image Test</h3>
+                <p>Test uploading an image to see the full flow:</p>
+                <ol>
+                    <li>Go to <a href="/admin/teachers" target="_blank">Admin Teachers Panel</a></li>
+                    <li>Click "Add New Teacher"</li>
+                    <li>Fill form and upload an image</li>
+                    <li>Submit and check console logs</li>
+                    <li>Return here and refresh to see results</li>
+                </ol>
+                <p><strong>Expected:</strong> Image should appear in both admin panel and about page</p>
+            `;
+        }
+        
+        // Console log capture
+        const originalLog = console.log;
+        const logs = [];
+        console.log = function(...args) {
+            logs.push(args.join(' '));
+            originalLog.apply(console, args);
+            
+            // Update console display
+            const consoleDiv = document.getElementById('console-logs');
+            if (consoleDiv) {
+                consoleDiv.innerHTML = `
+                    <h4>📝 Recent Console Logs (${logs.length})</h4>
+                    <div style="max-height: 200px; overflow-y: auto; font-family: monospace; font-size: 11px;">
+                        ${logs.slice(-10).map(log => `<div>${log}</div>`).join('')}
+                    </div>
+                `;
+            }
+        };
+        
+        // Run all tests
+        async function runAllTests() {
+            await testTeachersAPI();
+            await testDatabase();
+            testManualImage();
+        }
+        
+        // Auto-run
+        runAllTests();
+        
+        // Refresh button
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'r' && e.ctrlKey) {
+                e.preventDefault();
+                location.reload();
+            }
+        });
+    </script>
+</body>
+</html>
