@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Teacher Image Test</title>
+</head>
+<body>
+    <h1>Teacher Image Test</h1>
+    
+    <h2>Test 1: Default SVG Image</h2>
+    <img src="/images/teachers/default.svg" alt="Default Teacher" style="width: 100px; height: 100px; border: 2px solid blue;">
+    
+    <h2>Test 2: Teachers API</h2>
+    <div id="api-test"></div>
+    
+    <h2>Test 3: About Page Teachers</h2>
+    <div id="about-test"></div>
+    
+    <script>
+        // Test 1: Check if default image loads
+        fetch('/images/teachers/default.svg')
+            .then(response => {
+                console.log('Default image status:', response.status);
+                return response.text();
+            })
+            .then(svgContent => {
+                console.log('Default image loaded, size:', svgContent.length);
+            })
+            .catch(error => {
+                console.error('Default image error:', error);
+            });
+        
+        // Test 2: Check Teachers API
+        fetch('/api/teachers')
+            .then(response => response.json())
+            .then(teachers => {
+                console.log('Teachers API response:', teachers);
+                const apiTestDiv = document.getElementById('api-test');
+                
+                teachers.forEach(teacher => {
+                    const div = document.createElement('div');
+                    div.style.marginBottom = '20px';
+                    div.innerHTML = `
+                        <h3>${teacher.name} - ${teacher.subject}</h3>
+                        <p>Image URL: ${teacher.image_url || 'No image'}</p>
+                        <img src="${teacher.image_url || '/images/teachers/default.svg'}" 
+                             alt="${teacher.name}" 
+                             style="width: 80px; height: 80px; border: 1px solid gray;"
+                             onerror="this.src='/images/teachers/default.svg'">
+                    `;
+                    apiTestDiv.appendChild(div);
+                });
+            })
+            .catch(error => {
+                console.error('Teachers API error:', error);
+                document.getElementById('api-test').innerHTML = '<p>API Error: ' + error.message + '</p>';
+            });
+        
+        // Test 3: Simulate About page
+        fetch('/api/teachers')
+            .then(response => response.json())
+            .then(teachers => {
+                const aboutTestDiv = document.getElementById('about-test');
+                aboutTestDiv.innerHTML = '<h3>About Page Simulation</h3>';
+                
+                const grid = document.createElement('div');
+                grid.style.display = 'grid';
+                grid.style.gridTemplateColumns = 'repeat(3, 1fr)';
+                grid.style.gap = '20px';
+                
+                teachers.forEach(teacher => {
+                    const card = document.createElement('div');
+                    card.style.border = '1px solid #ccc';
+                    card.style.padding = '10px';
+                    card.style.textAlign = 'center';
+                    card.innerHTML = `
+                        <img src="${teacher.image_url || '/images/teachers/default.svg'}" 
+                             alt="${teacher.name}" 
+                             style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; margin-bottom: 10px;"
+                             onerror="this.src='/images/teachers/default.svg'">
+                        <h4>${teacher.name}</h4>
+                        <p>${teacher.subject}</p>
+                    `;
+                    grid.appendChild(card);
+                });
+                
+                aboutTestDiv.appendChild(grid);
+            })
+            .catch(error => {
+                console.error('About simulation error:', error);
+            });
+    </script>
+</body>
+</html>

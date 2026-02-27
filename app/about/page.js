@@ -22,20 +22,35 @@ export default function About() {
         {
           id: 1,
           name: "Mr. Ritesh Tiwari",
-          subject: "Mathematics Teacher",
-          image_url: "/images/teachers/teacher1.jpg"
+          subject: "Mathematics",
+          email: "ritesh.tiwari@umsjevari.edu",
+          phone: "9876543210",
+          bio: "Experienced mathematics teacher with expertise in algebra and geometry.",
+          experience_years: 15,
+          qualification: "M.Sc. Mathematics",
+          image_url: "/images/teachers/default.svg"
         },
         {
           id: 2,
           name: "Mrs. Sita Devi",
-          subject: "Science Teacher",
-          image_url: "/images/teachers/teacher2.jpg"
+          subject: "Science",
+          email: "sita.devi@umsjevari.edu",
+          phone: "9876543211",
+          bio: "Dedicated science teacher specializing in physics and chemistry.",
+          experience_years: 12,
+          qualification: "M.Sc. Physics",
+          image_url: "/images/teachers/default.svg"
         },
         {
           id: 3,
           name: "Mr. Aman Singh",
-          subject: "English Teacher",
-          image_url: "/images/teachers/teacher3.jpg"
+          subject: "English",
+          email: "aman.singh@umsjevari.edu",
+          phone: "9876543212",
+          bio: "Creative English teacher with strong background in literature.",
+          experience_years: 10,
+          qualification: "M.A. English",
+          image_url: "/images/teachers/default.svg"
         }
       ]);
     }
