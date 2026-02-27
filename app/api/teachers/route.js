@@ -16,7 +16,7 @@ export async function GET() {
       // Add image URL for teachers with images
       const teachersWithImageUrls = rows.map(teacher => ({
         ...teacher,
-        image_url: teacher.image_mime_type ? `/api/teachers/image/${teacher.id}` : null
+        image_url: teacher.image_mime_type ? `/api/teachers/image/${teacher.id}` : "/images/teachers/default.svg"
       }));
       
       console.log("✅ Database query successful, found", teachersWithImageUrls.length, "teachers");
