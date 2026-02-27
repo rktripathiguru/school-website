@@ -2,6 +2,7 @@
 // Run this with: node test-db-images.js
 
 const mysql = require('mysql2/promise');
+require('dotenv').config(); // Load environment variables
 
 async function testDatabaseImages() {
   let connection;
@@ -9,14 +10,17 @@ async function testDatabaseImages() {
   try {
     console.log('🔍 Testing Database Connection and Image Data...\n');
     
-    // Database configuration
+    // Use the same database configuration as the app
     const dbConfig = {
-      host: process.env.DB_HOST || 'localhost',
-      user: process.env.DB_USER || 'root',
-      password: process.env.DB_PASSWORD || 'password',
-      database: process.env.DB_NAME || 'school_db',
+      host: process.env.DB_HOST,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
       port: process.env.DB_PORT || 3306,
-      ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false
+      ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
+      connectionLimit: 10,
+      acquireTimeout: 60000,
+      timeout: 60000
     };
     
     console.log('📡 Connecting to database...');
@@ -24,8 +28,17 @@ async function testDatabaseImages() {
       host: dbConfig.host,
       user: dbConfig.user,
       database: dbConfig.database,
-      port: dbConfig.port
+      port: dbConfig.port,
+      ssl: dbConfig.ssl ? 'enabled' : 'disabled'
     });
+    
+    // Check if environment variables are loaded
+    if (!dbConfig.host || !dbConfig.user || !dbConfig.password) {
+      console.log('❌ Missing database configuration');
+      console.log('Please check your .env file or Railway environment variables');
+      console.log('Required: DB_HOST, DB_USER, DB_PASSWORD, DB_NAME');
+      return;
+    }
     
     connection = await mysql.createConnection(dbConfig);
     console.log('✅ Database connected successfully\n');
