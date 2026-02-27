@@ -66,7 +66,7 @@ export async function POST(request) {
     const uniqueFileName = `${timestamp}_${fileName}`;
     const filePath = `/uploads/gallery/${uniqueFileName}`;
     
-    console.log("� File details:", {
+    console.log("📁 File details:", {
       fileName,
       fileSize,
       mimeType,
@@ -127,7 +127,7 @@ export async function DELETE(request) {
     }
     
     console.log("=== Gallery Delete Request Started ===");
-    console.log("�️ Deleting image ID:", id);
+    console.log("🗑️ Deleting image ID:", id);
     
     // Try to delete from database
     try {
