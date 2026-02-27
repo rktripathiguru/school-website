@@ -10,14 +10,19 @@ export async function GET() {
     try {
       console.log("💾 Attempting database query...");
       const [rows] = await db.query(
-        "SELECT id, name, subject, email, phone, bio, experience_years, qualification, is_active, display_order, image_mime_type FROM teachers WHERE is_active = TRUE ORDER BY display_order ASC, name ASC"
+        "SELECT id, name, subject, email, phone, bio, experience_years, qualification, is_active, display_order, image_mime_type, image_data FROM teachers WHERE is_active = TRUE ORDER BY display_order ASC, name ASC"
       );
       
-      // Add image URL for teachers with images
-      const teachersWithImageUrls = rows.map(teacher => ({
-        ...teacher,
-        image_url: teacher.image_mime_type ? `/api/teachers/image/${teacher.id}` : "/images/teachers/default.svg"
-      }));
+      // Add image URL for teachers with actual image data
+      const teachersWithImageUrls = rows.map(teacher => {
+        const hasImage = teacher.image_data && teacher.image_data.length > 0;
+        console.log(`Teacher ${teacher.id} (${teacher.name}): hasImage=${hasImage}, imageSize=${teacher.image_data ? teacher.image_data.length : 0}, mimeType=${teacher.image_mime_type}`);
+        
+        return {
+          ...teacher,
+          image_url: hasImage ? `/api/teachers/image/${teacher.id}` : "/images/teachers/default.svg"
+        };
+      });
       
       console.log("✅ Database query successful, found", teachersWithImageUrls.length, "teachers");
       return Response.json(teachersWithImageUrls);

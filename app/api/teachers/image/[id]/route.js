@@ -1,5 +1,35 @@
 import db from "@/lib/db";
 
+// Helper function to generate default SVG
+function getDefaultImage(reason = "Teacher Photo") {
+  const svgPlaceholder = `
+    <svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:0.1" />
+          <stop offset="100%" style="stop-color:#1d4ed8;stop-opacity:0.2" />
+        </linearGradient>
+      </defs>
+      <circle cx="100" cy="100" r="90" fill="url(#bg)" stroke="#3b82f6" stroke-width="2"/>
+      <circle cx="100" cy="70" r="25" fill="#6b7280"/>
+      <ellipse cx="100" cy="140" rx="35" ry="30" fill="#6b7280"/>
+      <rect x="75" y="50" width="50" height="3" fill="#1f2937"/>
+      <polygon points="70,50 100,40 130,50" fill="#1f2937"/>
+      <rect x="95" y="50" width="10" height="15" fill="#1f2937"/>
+      <text x="100" y="185" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="600" fill="#374151">
+        ${reason}
+      </text>
+    </svg>
+  `;
+  
+  return new Response(svgPlaceholder, {
+    headers: {
+      'Content-Type': 'image/svg+xml',
+      'Cache-Control': 'public, max-age=3600'
+    }
+  });
+}
+
 export async function GET(request, { params }) {
   try {
     // Add immediate fallback for any parameter issues
@@ -77,120 +107,68 @@ export async function GET(request, { params }) {
     }
 
     try {
+      console.log("=== Teacher Image Request Started ===");
+      console.log("Teacher ID:", teacherId);
+      console.log("Request URL:", request.url);
+      
+      // Use a more robust query that doesn't rely on timestamps
       const [rows] = await db.query(
-        "SELECT image_data, image_mime_type, image_filename FROM teachers WHERE id = ?",
+        "SELECT image_data, image_mime_type, image_filename, updated_at FROM teachers WHERE id = ?",
         [teacherId]
       );
-
+      
+      console.log("Database query result:", rows.length, "rows found");
+      
       if (rows.length === 0) {
         console.log("❌ Teacher not found, returning default image");
-        
-        // Return default SVG when teacher not found
-        const svgPlaceholder = `
-          <svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:0.1" />
-                <stop offset="100%" style="stop-color:#1d4ed8;stop-opacity:0.2" />
-              </linearGradient>
-            </defs>
-            <circle cx="100" cy="100" r="90" fill="url(#bg)" stroke="#3b82f6" stroke-width="2"/>
-            <circle cx="100" cy="70" r="25" fill="#6b7280"/>
-            <ellipse cx="100" cy="140" rx="35" ry="30" fill="#6b7280"/>
-            <rect x="75" y="50" width="50" height="3" fill="#1f2937"/>
-            <polygon points="70,50 100,40 130,50" fill="#1f2937"/>
-            <rect x="95" y="50" width="10" height="15" fill="#1f2937"/>
-            <text x="100" y="185" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="600" fill="#374151">
-              Teacher Photo
-            </text>
-          </svg>
-        `;
-        
-        return new Response(svgPlaceholder, {
-          headers: {
-            'Content-Type': 'image/svg+xml',
-            'Cache-Control': 'public, max-age=3600'
-          }
-        });
-      }
-
-      if (!rows[0].image_data) {
-        console.log("❌ No image data found, returning default image");
-        
-        // Return default SVG when no image data
-        const svgPlaceholder = `
-          <svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:0.1" />
-                <stop offset="100%" style="stop-color:#1d4ed8;stop-opacity:0.2" />
-              </linearGradient>
-            </defs>
-            <circle cx="100" cy="100" r="90" fill="url(#bg)" stroke="#3b82f6" stroke-width="2"/>
-            <circle cx="100" cy="70" r="25" fill="#6b7280"/>
-            <ellipse cx="100" cy="140" rx="35" ry="30" fill="#6b7280"/>
-            <rect x="75" y="50" width="50" height="3" fill="#1f2937"/>
-            <polygon points="70,50 100,40 130,50" fill="#1f2937"/>
-            <rect x="95" y="50" width="10" height="15" fill="#1f2937"/>
-            <text x="100" y="185" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="600" fill="#374151">
-              Teacher Photo
-            </text>
-          </svg>
-        `;
-        
-        return new Response(svgPlaceholder, {
-          headers: {
-            'Content-Type': 'image/svg+xml',
-            'Cache-Control': 'public, max-age=3600'
-          }
-        });
+        return getDefaultImage("Teacher Not Found");
       }
 
       const teacher = rows[0];
+      console.log("Teacher data:", {
+        hasImageData: !!teacher.image_data,
+        imageDataSize: teacher.image_data ? teacher.image_data.length : 0,
+        mimeType: teacher.image_mime_type,
+        filename: teacher.image_filename,
+        updatedAt: teacher.updated_at
+      });
       
       // Check if image_data exists and is not empty
       if (!teacher.image_data || teacher.image_data.length === 0) {
         console.log("❌ No image data found, returning default image");
-        
-        // Return default SVG when no image data
-        const svgPlaceholder = `
-          <svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:0.1" />
-                <stop offset="100%" style="stop-color:#1d4ed8;stop-opacity:0.2" />
-              </linearGradient>
-            </defs>
-            <circle cx="100" cy="100" r="90" fill="url(#bg)" stroke="#3b82f6" stroke-width="2"/>
-            <circle cx="100" cy="70" r="25" fill="#6b7280"/>
-            <ellipse cx="100" cy="140" rx="35" ry="30" fill="#6b7280"/>
-            <rect x="75" y="50" width="50" height="3" fill="#1f2937"/>
-            <polygon points="70,50 100,40 130,50" fill="#1f2937"/>
-            <rect x="95" y="50" width="10" height="15" fill="#1f2937"/>
-            <text x="100" y="185" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="600" fill="#374151">
-              Teacher Photo
-            </text>
-          </svg>
-        `;
-        
-        return new Response(svgPlaceholder, {
-          headers: {
-            'Content-Type': 'image/svg+xml',
-            'Cache-Control': 'public, max-age=3600'
-          }
-        });
+        return getDefaultImage("No Image Data");
       }
       
-      console.log("✅ Found image data, size:", teacher.image_data.length, "bytes");
-      console.log("✅ MIME type:", teacher.image_mime_type);
-      console.log("✅ Filename:", teacher.image_filename);
+      console.log("✅ Found image data, serving image");
       
-      const imageBuffer = Buffer.from(teacher.image_data);
+      // Handle different data types (Buffer vs string)
+      let imageBuffer;
+      if (Buffer.isBuffer(teacher.image_data)) {
+        imageBuffer = teacher.image_data;
+      } else if (typeof teacher.image_data === 'string') {
+        // Handle base64 encoded data
+        try {
+          imageBuffer = Buffer.from(teacher.image_data, 'base64');
+        } catch (e) {
+          console.log("❌ Failed to decode base64 image data");
+          return getDefaultImage("Invalid Image Data");
+        }
+      } else {
+        // Handle other formats
+        try {
+          imageBuffer = Buffer.from(teacher.image_data);
+        } catch (e) {
+          console.log("❌ Failed to convert image data to buffer");
+          return getDefaultImage("Image Conversion Error");
+        }
+      }
       
       return new Response(imageBuffer, {
         headers: {
           'Content-Type': teacher.image_mime_type || 'image/jpeg',
-          'Cache-Control': 'public, max-age=31536000', // Cache for 1 year
+          'Cache-Control': 'no-cache, no-store, must-revalidate', // Disable caching for debugging
+          'Pragma': 'no-cache',
+          'Expires': '0',
           'Content-Disposition': `inline; filename="${teacher.image_filename || 'teacher-image.jpg'}"`
         }
       });
