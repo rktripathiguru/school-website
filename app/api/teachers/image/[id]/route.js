@@ -2,14 +2,48 @@ import db from "@/lib/db";
 
 export async function GET(request, { params }) {
   try {
+    // Add immediate fallback for any parameter issues
+    if (!params || !params.id) {
+      console.log("❌ Invalid params, returning default image immediately");
+      const svgPlaceholder = `
+        <svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:0.1" />
+              <stop offset="100%" style="stop-color:#1d4ed8;stop-opacity:0.2" />
+            </linearGradient>
+          </defs>
+          <circle cx="100" cy="100" r="90" fill="url(#bg)" stroke="#3b82f6" stroke-width="2"/>
+          <circle cx="100" cy="70" r="25" fill="#6b7280"/>
+          <ellipse cx="100" cy="140" rx="35" ry="30" fill="#6b7280"/>
+          <rect x="75" y="50" width="50" height="3" fill="#1f2937"/>
+          <polygon points="70,50 100,40 130,50" fill="#1f2937"/>
+          <rect x="95" y="50" width="10" height="15" fill="#1f2937"/>
+          <text x="100" y="185" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="600" fill="#374151">
+            Teacher Photo
+          </text>
+        </svg>
+      `;
+      
+      return new Response(svgPlaceholder, {
+        headers: {
+          'Content-Type': 'image/svg+xml',
+          'Cache-Control': 'public, max-age=3600'
+        }
+      });
+    }
+    
     const teacherId = params.id;
     
+    console.log("=== Teacher Image Request Started ===");
+    console.log("Full params:", params);
+    console.log("Teacher ID:", teacherId);
+    console.log("Teacher ID type:", typeof teacherId);
+    
     if (!teacherId) {
+      console.log("❌ No teacher ID provided");
       return Response.json({ error: "Teacher ID is required" }, { status: 400 });
     }
-
-    console.log("=== Teacher Image Request Started ===");
-    console.log("Teacher ID:", teacherId);
 
     try {
       const [rows] = await db.query(
