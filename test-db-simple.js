@@ -21,6 +21,7 @@ async function testDatabaseSimple() {
       
       if (tables.length === 0) {
         console.log('❌ Teachers table does not exist');
+        console.log('Please run: node scripts/create-teachers-table.cjs');
         return;
       }
     } catch (error) {
@@ -36,6 +37,11 @@ async function testDatabaseSimple() {
         col.Field.includes('image') || col.Field.includes('mime') || col.Field.includes('filename')
       );
       console.log('Image-related columns:', imageColumns.map(col => `${col.Field} (${col.Type})`));
+      
+      if (imageColumns.length === 0) {
+        console.log('❌ No image-related columns found');
+        console.log('Please ensure table has: image_data, image_mime_type, image_filename');
+      }
     } catch (error) {
       console.log('❌ Error checking structure:', error.message);
     }
@@ -82,6 +88,7 @@ async function testDatabaseSimple() {
             console.log('First 10 bytes:', Array.from(image.image_data.slice(0, 10)));
           } else {
             console.log('❌ Image data is not a Buffer');
+            console.log('Data value:', image.image_data);
             console.log('Trying to convert...');
             try {
               const buffer = Buffer.from(image.image_data);
@@ -94,6 +101,8 @@ async function testDatabaseSimple() {
         }
       } else {
         console.log('❌ No teachers with images found');
+        console.log('💡 Try uploading an image via the admin panel first');
+        console.log('   Go to: http://localhost:3000/admin/teachers');
       }
       
     } catch (error) {
@@ -129,6 +138,8 @@ async function testDatabaseSimple() {
       console.log('❌ Error testing API query:', error.message);
     }
     
+    console.log('\n🎉 Database test completed!');
+    
   } catch (error) {
     console.error('❌ Database connection error:', error.message);
     console.error('Error code:', error.code);
@@ -136,19 +147,26 @@ async function testDatabaseSimple() {
     
     if (error.code === 'ECONNREFUSED') {
       console.log('\n💡 Connection refused - Check:');
-      console.log('   - Database server is running');
-      console.log('   - Host and port are correct');
-      console.log('   - Firewall allows connection');
+      console.log('   - DATABASE_URL environment variable is set');
+      console.log('   - Railway MySQL service is running');
+      console.log('   - Network allows connection');
     } else if (error.code === 'ENOTFOUND') {
       console.log('\n💡 Host not found - Check:');
-      console.log('   - DB_HOST environment variable');
-      console.log('   - DNS resolution');
+      console.log('   - DATABASE_URL hostname is correct');
       console.log('   - Railway service is running');
     } else if (error.code === 'ETIMEDOUT') {
       console.log('\n💡 Connection timeout - Check:');
       console.log('   - Network connectivity');
       console.log('   - Database server response time');
       console.log('   - SSL configuration');
+    } else if (error.code === 'ER_ACCESS_DENIED_ERROR') {
+      console.log('\n💡 Access denied - Check:');
+      console.log('   - DATABASE_URL username and password');
+      console.log('   - Database user permissions');
+    } else if (error.code === 'ER_BAD_DB_ERROR') {
+      console.log('\n💡 Database not found - Check:');
+      console.log('   - DATABASE_URL database name');
+      console.log('   - Database exists on server');
     }
   }
 }
